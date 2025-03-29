@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Element;
+namespace Kavalhub\FormGenerator\Element;
 
-use Kavalhub\Form\Element\Interface\ElementInterface;
-use Kavalhub\Form\Element\Trait\HtmlClass;
-use Kavalhub\Form\Element\Trait\HtmlHidden;
-use Kavalhub\Form\Element\Trait\HtmlId;
-use Kavalhub\Form\Element\Trait\TraitHtmlCollector;
+use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
+use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
+use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
+use Kavalhub\FormGenerator\Element\Trait\HtmlId;
+use Kavalhub\FormGenerator\Element\Trait\TraitHtmlCollector;
 
 class Element implements ElementInterface
 {

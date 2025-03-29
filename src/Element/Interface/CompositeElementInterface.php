@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Element\Interface;
+namespace Kavalhub\FormGenerator\Element\Interface;
 
-use Kavalhub\Form\Element\Element;
+use Kavalhub\FormGenerator\Element\Element;
 
 interface CompositeElementInterface
 {

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Form;
+namespace Kavalhub\FormGenerator\Form;
 
-use Kavalhub\Form\Element\ElementWithValue;
-use Kavalhub\Form\Element\Trait\HtmlType;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
+use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 
 class InputText extends ElementWithValue
 {
