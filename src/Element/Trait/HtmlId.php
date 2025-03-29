@@ -9,7 +9,7 @@ trait HtmlId
 
     public function getId(): string
     {
-        return $this->id ?? static::class ?? '';
+        return $this->id ?? $this->name ?? static::class ?? '';
     }
 
     public function setId(string $id): self

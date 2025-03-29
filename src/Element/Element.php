@@ -7,11 +7,11 @@ use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
-use Kavalhub\FormGenerator\Element\Trait\TraitHtmlCollector;
+use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
 
 class Element implements ElementInterface
 {
-    use TraitHtmlCollector;
+    use TraitCollector;
     use HtmlClass;
     use HtmlHidden;
     use HtmlId;

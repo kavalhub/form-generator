@@ -4,20 +4,17 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\ElementWithValue;
-use Kavalhub\FormGenerator\Element\Trait\HtmlPlaceholder;
 use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
 use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 
-class InputText extends ElementWithValue
+class InputSubmit extends ElementWithValue
 {
     use HtmlType;
-    use HtmlRequired;
-    use HtmlPlaceholder;
 
     public function __construct(string $name)
     {
         parent::__construct($name);
-        $this->setType('text');
+        $this->setType('submit');
     }
 
     public function getHtml(): string
