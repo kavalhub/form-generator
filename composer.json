@@ -10,11 +10,21 @@
             "Kavalhub\\FormGenerator\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Kavalhub\\Tests\\FormGenerator\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Каменев Валерий",
             "email": "valick1977@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "~8.2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.2"
+    }
 }

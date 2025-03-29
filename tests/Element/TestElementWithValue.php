@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Tests\Form\Element;
+namespace Kavalhub\Tests\FormGenerator\Element;
 
 class TestElementWithValue
 {
