@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": ["PHP", "Form", "Validation form"],
     "homepage": "https://github.com/kavalhub/form-generator.git",
-    "license": "Apache License 2.0",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Kavalhub\\FormGenerator\\": "src/"
