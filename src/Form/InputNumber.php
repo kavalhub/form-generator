@@ -8,7 +8,7 @@ use Kavalhub\FormGenerator\Element\Trait\HtmlPlaceholder;
 use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
 use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 
-class InputText extends ElementWithValue
+class InputNumber extends ElementWithValue
 {
     use HtmlType;
     use HtmlRequired;
@@ -17,7 +17,7 @@ class InputText extends ElementWithValue
     public function __construct(string $name)
     {
         parent::__construct($name);
-        $this->setType('text');
+        $this->setType('number');
     }
 
     public function getHtml(): string
