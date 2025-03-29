@@ -1,29 +1,25 @@
 {
-  "name": "kavalhub/form-generator",
-  "description": "Easily create, validate, and display forms.",
-  "keywords": ["PHP", "Form", "Validation form"],
-  "homepage": "https://github.com/kavalhub/form-generator.git",
-  "license": "Apache License 2.0",
-  "authors": [
-    {
-      "name": "Каменев Валерий",
-      "email": "valick1977@gmail.com"
+    "name": "kavalhub/form-generator",
+    "description": "Easily create, validate, and display forms.",
+    "type": "library",
+    "keywords": ["PHP", "Form", "Validation form"],
+    "homepage": "https://github.com/kavalhub/form-generator.git",
+    "license": "Apache License 2.0",
+    "autoload": {
+        "psr-4": {
+            "Kavalhub\\FormGenerator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Каменев Валерий",
+            "email": "valick1977@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5 || ^5.7 || ^4.8.35"
     }
-  ],
-  "require": {
-    "php": ">=8.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^9.5 || ^5.7 || ^4.8.35"
-  },
-  "autoload": {
-    "psr-4": {
-      "Kavalhub\\Form\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Kavalhub\\Tests\\Form\\": "tests/"
-    }
-  }
 }
