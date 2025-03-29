@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Element;
+namespace Kavalhub\FormGenerator\Element;
 
-use Kavalhub\Form\Element\Trait\HtmlName;
-use Kavalhub\Form\Element\Trait\HtmlRequired;
-use Kavalhub\Form\Element\Trait\HtmlValue;
+use Kavalhub\FormGenerator\Element\Trait\HtmlName;
+use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
+use Kavalhub\FormGenerator\Element\Trait\HtmlValue;
 
 class ElementWithValue extends Element
 {

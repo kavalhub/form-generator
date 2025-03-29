@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Element\Trait;
+namespace Kavalhub\FormGenerator\Element\Trait;
 
 trait HtmlRequired
 {

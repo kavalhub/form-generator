@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Form;
+namespace Kavalhub\FormGenerator\Form;
 
-use Kavalhub\Form\Element\CompositeElement;
+use Kavalhub\FormGenerator\Element\CompositeElement;
 
 class Form extends CompositeElement
 {

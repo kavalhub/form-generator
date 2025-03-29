@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Form\Element;
+namespace Kavalhub\FormGenerator\Element;
 
-use Kavalhub\Form\Element\Interface\CompositeElementInterface;
-use Kavalhub\Form\Element\Interface\ElementInterface;
+use Kavalhub\FormGenerator\Element\Interface\CompositeElementInterface;
+use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use SplObjectStorage;
 
 class CompositeElement extends Element implements CompositeElementInterface
