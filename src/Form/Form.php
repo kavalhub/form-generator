@@ -21,7 +21,9 @@ class Form extends CompositeElement
 
     public function addElement(ElementInterface $element, mixed $info = null): self
     {
-        $element->setName($this->getName() . '_' . $element->getName());
+        if (method_exists($element, 'setName')) {
+            $element->setName($this->getName() . '_' . $element->getName());
+        }
         $this->elementStorage->attach($element, $info ?? $element->getId());
 
         return $this;

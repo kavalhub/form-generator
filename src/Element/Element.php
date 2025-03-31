@@ -8,6 +8,7 @@ use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
+use ReflectionClass;
 
 class Element implements ElementInterface
 {

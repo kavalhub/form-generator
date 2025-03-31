@@ -9,15 +9,8 @@ trait TraitCollector
 {
     public function getHtmlTrait(): string
     {
-
-        $reflection = new ReflectionClass($this);
-        $traitName = $reflection->getTraitNames();
-        if ($parent = $reflection->getParentClass())
-        {
-            $traitName = array_merge($traitName, $parent->getTraitNames());
-        }
         $html = '';
-        foreach ($traitName as $name) {
+        foreach ($this->getTraitName() as $name) {
             $className = explode('\\', $name);
             $className = end($className);
             if (str_contains($className, 'Html')) {
@@ -26,5 +19,20 @@ trait TraitCollector
         }
 
         return $html;
+    }
+
+    private function getTraitName(): array
+    {
+        $refClass = new ReflectionClass($this);
+        $traitName = $refClass->getTraitNames();
+        $parentTraitName = [];
+        while ($parent = $refClass->getParentClass()) {
+            $parentTraitName[] = $parent->getTraitNames();
+            $refClass = $parent;
+        }
+        $traitName = array_unique(array_merge($traitName, ...$parentTraitName));
+        sort($traitName);
+
+        return $traitName;
     }
 }
