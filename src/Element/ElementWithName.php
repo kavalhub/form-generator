@@ -5,7 +5,7 @@ namespace Kavalhub\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 
-class ElementWithName extends ElementWithValue
+class ElementWithName extends Element
 {
     use HtmlName;
 

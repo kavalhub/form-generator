@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Decorator\Bootstrap;
 
 use Kavalhub\FormGenerator\Decorator\Interface\DecoratorInterface;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 
 class BootstrapDecorator implements DecoratorInterface
@@ -15,11 +16,19 @@ class BootstrapDecorator implements DecoratorInterface
 
     public function __construct(ElementInterface $element)
     {
-        $this->element = $element;
+        $this->element = clone $element;
     }
 
     public function getHtml(): string
     {
+        if ($this->element instanceof ElementWithValue) {
+            if ($this->element->getError()) {
+                $this->element->addClass([$this->getErrorClass()]);
+            }
+            if ($this->element->isValid()) {
+                $this->element->addClass([$this->getSuccessClass()]);
+            }
+        }
         $className = explode('\\', get_class($this->element));
         $className = end($className);
         $template = $this->path . '/' . $className . '.php';
