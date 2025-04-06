@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Form;
 
-use Kavalhub\FormGenerator\Element\ElementWithName;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 
-class InputSubmit extends ElementWithName
+class InputSubmit extends ElementWithValue
 {
     use HtmlType;
 

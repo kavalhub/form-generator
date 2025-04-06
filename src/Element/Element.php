@@ -4,14 +4,16 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
+use Kavalhub\FormGenerator\Element\Trait\CallbackValidator;
 use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
-use ReflectionClass;
+use SplObjectStorage;
 
 class Element implements ElementInterface
 {
+    use CallbackValidator;
     use TraitCollector;
     use HtmlClass;
     use HtmlHidden;
@@ -20,5 +22,10 @@ class Element implements ElementInterface
     public function getComposite(): ?self
     {
         return null;
+    }
+
+    public function getAll(): SplObjectStorage
+    {
+        return new SplObjectStorage();
     }
 }

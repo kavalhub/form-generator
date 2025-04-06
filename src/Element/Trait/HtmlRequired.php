@@ -14,6 +14,11 @@ trait HtmlRequired
         return $this;
     }
 
+    public function isRequired(): bool
+    {
+        return $this->required;
+    }
+
     protected function getHtmlRequired(): string
     {
         return $this->required ? ' required' : '';

@@ -3,24 +3,23 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Form;
 
+use Kavalhub\FormGenerator\Element\Element;
 use Kavalhub\FormGenerator\Element\ElementWithName;
-use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlFor;
-use Kavalhub\FormGenerator\Element\Trait\HtmlValue;
 
-class Label extends ElementWithValue
+class Label extends Element
 {
     use HtmlFor;
-    use HtmlValue;
+    protected string $label = '';
 
     public function __construct(ElementWithName $element, string $label)
     {
         $this->setFor($element->getId());
-        $this->setValue($label);
+        $this->label = $label;
     }
 
     public function getHtml(): string
     {
-        return '<label' . $this->getHtmlTrait() . '>' . $this->getValue() . '</label>';
+        return '<label' . $this->getHtmlTrait() . '><h4>' . $this->label . '</h4></label>';
     }
 }
