@@ -7,12 +7,15 @@ use ReflectionClass;
 
 trait TraitCollector
 {
-    public function getHtmlTrait(): string
+    public function getHtmlTrait(array $without = []): string
     {
         $html = '';
         foreach ($this->getTraitName() as $name) {
             $className = explode('\\', $name);
             $className = end($className);
+            if (in_array($className, $without, true)) {
+                continue;
+            }
             if (str_contains($className, 'Html')) {
                 $html .= $this->{'get' . $className}();
             }

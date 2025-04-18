@@ -9,7 +9,7 @@ trait HtmlFor
 
     public function getFor(): string
     {
-        return $this->for;
+        return !empty($this->parent) ? $this->parent->getId() . '_' . $this->for : $this->for;
     }
 
     public function setFor(string $for): self
@@ -21,6 +21,6 @@ trait HtmlFor
 
     protected function getHtmlFor(): string
     {
-        return !empty($this->for) ? ' for="' . $this->for . '"' : '';
+        return !empty($this->getFor()) ? ' for="' . $this->getFor() . '"' : '';
     }
 }

@@ -9,7 +9,7 @@ trait HtmlName
 
     public function getName(): string
     {
-        return $this->name;
+        return !empty($this->parent) ? $this->parent->getId() . '_' . $this->name : $this->name;
     }
 
     public function setName(string $name): self
@@ -21,6 +21,6 @@ trait HtmlName
 
     protected function getHtmlName(): string
     {
-        return !empty($this->name) ? ' name="' . $this->name . '"' : '';
+        return !empty($this->getName()) ? ' name="' . $this->getName() . '"' : '';
     }
 }

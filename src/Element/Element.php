@@ -19,6 +19,15 @@ class Element implements ElementInterface
     use HtmlHidden;
     use HtmlId;
 
+    protected ElementInterface $parent;
+
+    public function setParent(ElementInterface $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
     public function getComposite(): ?self
     {
         return null;

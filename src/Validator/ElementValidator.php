@@ -28,6 +28,9 @@ readonly class ElementValidator implements ElementValidatorInterface
             }
             $this->element->setValid();
         }
+        foreach ($this->element->getCallbackValidatorList() as $callbackValidator) {
+            $validate[] = $callbackValidator($this->element);
+        }
 
         return !in_array(false, $validate, true);
     }
