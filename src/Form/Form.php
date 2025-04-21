@@ -6,11 +6,13 @@ namespace Kavalhub\FormGenerator\Form;
 use Kavalhub\FormGenerator\Element\CompositeElement;
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 use Kavalhub\FormGenerator\Element\Trait\HtmlNovalidate;
+use Kavalhub\FormGenerator\Element\Trait\Valid;
 
 class Form extends CompositeElement
 {
     use HtmlNovalidate;
     use HtmlName;
+    use Valid;
 
     public function __construct(string $name)
     {
