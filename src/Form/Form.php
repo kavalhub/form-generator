@@ -4,29 +4,20 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\CompositeElement;
-use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 use Kavalhub\FormGenerator\Element\Trait\HtmlNovalidate;
+use Kavalhub\FormGenerator\Element\Trait\Valid;
 
 class Form extends CompositeElement
 {
     use HtmlNovalidate;
     use HtmlName;
+    use Valid;
 
     public function __construct(string $name)
     {
-        parent::__construct();
         $this->setName($name);
-    }
-
-    public function addElement(ElementInterface $element, mixed $info = null): self
-    {
-        if (method_exists($element, 'setName')) {
-            $element->setName($this->getName() . '_' . $element->getName());
-        }
-        $this->elementStorage->attach($element, $info ?? $element->getId());
-
-        return $this;
+        parent::__construct();
     }
 
     public function getHtml(): string

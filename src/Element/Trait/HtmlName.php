@@ -5,11 +5,12 @@ namespace Kavalhub\FormGenerator\Element\Trait;
 
 trait HtmlName
 {
+    protected bool $multiple = false;
     protected string $name = '';
 
     public function getName(): string
     {
-        return $this->name;
+        return !empty($this->parent) ? $this->parent->getId() . '_' . $this->name : $this->name;
     }
 
     public function setName(string $name): self
@@ -19,8 +20,16 @@ trait HtmlName
         return $this;
     }
 
+    public function setMultiple(bool $value = true): self
+    {
+        $this->multiple = $value;
+
+        return $this;
+    }
     protected function getHtmlName(): string
     {
-        return !empty($this->name) ? ' name="' . $this->name . '"' : '';
+        $multiple = $this->multiple ? '[]' : '';
+
+        return !empty($this->getName()) ? ' name="' . $this->getName() . $multiple . '"' : '';
     }
 }

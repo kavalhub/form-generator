@@ -9,7 +9,7 @@ trait HtmlId
 
     public function getId(): string
     {
-        return $this->id ?? $this->name ?? static::class ?? '';
+        return !empty($this->parent) ? $this->parent->getId() . '_' . $this->getThisId() : $this->getThisId();
     }
 
     public function setId(string $id): self
@@ -17,6 +17,11 @@ trait HtmlId
         $this->id = $id;
 
         return $this;
+    }
+
+    protected function getThisId(): string
+    {
+        return $this->id ?? $this->name ?? static::class ?? '';
     }
 
     protected function getHtmlId(): string

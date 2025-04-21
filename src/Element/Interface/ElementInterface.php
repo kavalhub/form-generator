@@ -7,6 +7,7 @@ use SplObjectStorage;
 
 interface ElementInterface
 {
+    public function setParent(ElementInterface $parent): self;
     public function getComposite(): ?self;
 
     public function getAll(): SplObjectStorage;

@@ -17,16 +17,23 @@ readonly class ElementValidator implements ElementValidatorInterface
     public function validate(): bool
     {
         $validate = $this->getValidate();
-        if ($this->element instanceof ElementWithValue) {
-            $value = $this->request->get($this->element->getName())[0];
+        //if ($this->element instanceof ElementWithValue) {
+            $value = $this->request->get($this->element->getName());
             if (isset($value)) {
-                $this->element->setValue((string)$value);
+                foreach ($value as $item) {
+                    $this->element->setValue((string)$item);
+                    if ($item === '' && $this->element->isRequired()) {
+                        $this->element->addError(['Required field is required.']);
+                        $validate[] = false;
+                    }
+                }
             }
-            if(empty($value) && $this->element->isRequired()) {
-                $this->element->addError(['Required field is required.']);
-                return false;
+            if (!in_array(false, $validate, true)) {
+                $this->element->setValid();
             }
-            $this->element->setValid();
+        //}
+        foreach ($this->element->getCallbackValidatorList() as $callbackValidator) {
+            $validate[] = $callbackValidator($this->element);
         }
 
         return !in_array(false, $validate, true);

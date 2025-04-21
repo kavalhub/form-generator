@@ -13,5 +13,4 @@ class ElementWithValue extends ElementWithName
     use Error;
     use Valid;
     use HtmlValue;
-    use HtmlRequired;
 }
