@@ -8,6 +8,7 @@ use Kavalhub\FormGenerator\Element\Trait\CallbackValidator;
 use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
+use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
 use SplObjectStorage;
 
@@ -18,6 +19,7 @@ class Element implements ElementInterface
     use HtmlClass;
     use HtmlHidden;
     use HtmlId;
+    use HtmlRequired;
 
     protected ElementInterface $parent;
 

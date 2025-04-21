@@ -6,7 +6,6 @@ namespace Kavalhub\FormGenerator\Form;
 use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlMax;
 use Kavalhub\FormGenerator\Element\Trait\HtmlMin;
-use Kavalhub\FormGenerator\Element\Trait\HtmlPlaceholder;
 use Kavalhub\FormGenerator\Element\Trait\HtmlStep;
 use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 
@@ -16,8 +15,6 @@ class InputRange extends ElementWithValue
     use HtmlMax;
     use HtmlStep;
     use HtmlType;
-    use HtmlPlaceholder;
-
 
     public function __construct(string $name)
     {

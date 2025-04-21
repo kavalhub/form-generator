@@ -5,6 +5,7 @@ namespace Kavalhub\FormGenerator\Element\Trait;
 
 trait HtmlName
 {
+    protected bool $multiple = false;
     protected string $name = '';
 
     public function getName(): string
@@ -19,8 +20,16 @@ trait HtmlName
         return $this;
     }
 
+    public function setMultiple(bool $value = true): self
+    {
+        $this->multiple = $value;
+
+        return $this;
+    }
     protected function getHtmlName(): string
     {
-        return !empty($this->getName()) ? ' name="' . $this->getName() . '"' : '';
+        $multiple = $this->multiple ? '[]' : '';
+
+        return !empty($this->getName()) ? ' name="' . $this->getName() . $multiple . '"' : '';
     }
 }

@@ -4,15 +4,14 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\Element;
-use Kavalhub\FormGenerator\Element\ElementWithValue;
+use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\HtmlFor;
-use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 
 class Label extends Element
 {
     use HtmlFor;
 
-    public function __construct(protected ElementWithValue $element, protected string $label)
+    public function __construct(protected ElementInterface $element, protected string $label)
     {
         $this->setFor($element->getId());
         $this->setId('label_' . $element->getId());
