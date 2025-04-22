@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Validator;
 
-use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
@@ -17,25 +16,24 @@ readonly class ElementValidator implements ElementValidatorInterface
     public function validate(): bool
     {
         $validate = $this->getValidate();
-        //if ($this->element instanceof ElementWithValue) {
-            $value = $this->request->get($this->element->getName());
-            if (isset($value)) {
-                foreach ($value as $item) {
-                    $this->element->setValue((string)$item);
-                    if ($item === '' && $this->element->isRequired()) {
-                        $this->element->addError(['Required field is required.']);
-                        $validate[] = false;
-                    }
+        $value = $this->request->get($this->element->getName());
+        if (isset($value)) {
+            foreach ($value as $item) {
+                $this->element->setValue((string)$item);
+                if ($item === '' && $this->element->isRequired()) {
+                    $this->element->addError(['Поле должно быть заполнено']);
+                    $validate[] = false;
                 }
             }
-            if (!in_array(false, $validate, true)) {
-                $this->element->setValid();
-            }
-        //}
+        } else {
+            return false;
+        }
         foreach ($this->element->getCallbackValidatorList() as $callbackValidator) {
             $validate[] = $callbackValidator($this->element);
         }
-
+        if (!in_array(false, $validate, true)) {
+            $this->element->setValid();
+        }
         return !in_array(false, $validate, true);
     }
 

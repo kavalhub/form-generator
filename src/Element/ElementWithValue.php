@@ -11,6 +11,5 @@ use Kavalhub\FormGenerator\Element\Trait\Valid;
 class ElementWithValue extends ElementWithName
 {
     use Error;
-    use Valid;
     use HtmlValue;
 }

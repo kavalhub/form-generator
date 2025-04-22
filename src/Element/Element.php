@@ -10,6 +10,7 @@ use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
 use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
+use Kavalhub\FormGenerator\Element\Trait\Valid;
 use SplObjectStorage;
 
 class Element implements ElementInterface
@@ -20,6 +21,7 @@ class Element implements ElementInterface
     use HtmlHidden;
     use HtmlId;
     use HtmlRequired;
+    use Valid;
 
     protected ElementInterface $parent;
 

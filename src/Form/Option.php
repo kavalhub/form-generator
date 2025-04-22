@@ -30,6 +30,6 @@ class Option extends Element
 
     public function getHtml(): string
     {
-        return '<option' . $this->getHtmlTrait() . '>' . $this->getLabel() . '</option>';
+        return '<option' . $this->getHtmlTrait(['HtmlId']) . '>' . $this->getLabel() . '</option>';
     }
 }

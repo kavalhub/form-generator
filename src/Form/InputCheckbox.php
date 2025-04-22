@@ -18,6 +18,7 @@ class InputCheckbox extends ElementWithValue
     {
         parent::__construct($name);
         $this->setType('checkbox');
+        $this->setMultiple();
         $this->value = $value;
     }
 
@@ -26,6 +27,11 @@ class InputCheckbox extends ElementWithValue
         if ($value === $this->getValue()) {
             $this->setChecked();
         }
+        return $this;
+    }
+
+    public function setValid(bool $valid = true): self
+    {
         return $this;
     }
 
