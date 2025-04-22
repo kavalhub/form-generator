@@ -29,6 +29,11 @@ class InputRadio extends ElementWithValue
         return $this;
     }
 
+    public function setValid(bool $valid = true): self
+    {
+        return $this;
+    }
+
     public function getHtml(): string
     {
         return '<input' . $this->getHtmlTrait() . '>';

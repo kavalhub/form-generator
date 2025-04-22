@@ -6,13 +6,11 @@ namespace Kavalhub\FormGenerator\Form;
 use Kavalhub\FormGenerator\Element\CompositeElement;
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 use Kavalhub\FormGenerator\Element\Trait\HtmlNovalidate;
-use Kavalhub\FormGenerator\Element\Trait\Valid;
 
 class Form extends CompositeElement
 {
     use HtmlNovalidate;
     use HtmlName;
-    use Valid;
 
     public function __construct(string $name)
     {
@@ -20,12 +18,15 @@ class Form extends CompositeElement
         parent::__construct();
     }
 
-    public function getHtml(): string
+    public function getHtml(string $tag = null): string
     {
+        $openTag = $tag ? '<' . $tag . '>' : '';
+        $closeTag = $tag ? '</' . $tag . '>' : '';
         $html = '';
         foreach ($this->elementStorage as $element) {
-            $html .= $element->getHtml();
+            $html .= $openTag . $element->getHtml() . $closeTag;
         }
+
         return '<form' . $this->getHtmlTrait() . '>' . $html . '</form>';
     }
 }
