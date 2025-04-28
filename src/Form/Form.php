@@ -4,13 +4,17 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\CompositeElement;
+use Kavalhub\FormGenerator\Element\Trait\HtmlEnctype;
+use Kavalhub\FormGenerator\Element\Trait\HtmlMethod;
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 use Kavalhub\FormGenerator\Element\Trait\HtmlNovalidate;
 
 class Form extends CompositeElement
 {
-    use HtmlNovalidate;
+    use HtmlEnctype;
+    use HtmlMethod;
     use HtmlName;
+    use HtmlNovalidate;
 
     public function __construct(string $name)
     {
