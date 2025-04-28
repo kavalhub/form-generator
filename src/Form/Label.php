@@ -14,7 +14,7 @@ class Label extends Element
     public function __construct(protected ElementInterface $element, protected string $label)
     {
         $this->setFor($element->getId());
-        $this->setId('label_' . $element->getId());
+        $this->setId($element->getId() . '_label');
     }
 
     public function isRequired(): bool

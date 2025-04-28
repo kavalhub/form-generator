@@ -14,7 +14,7 @@ class Option extends Element
     use HtmlValue;
     use Label;
 
-    public function __construct(string $value, string $label)
+    public function __construct(string $value = '', string $label = '')
     {
         $this->value = $value;
         $this->label = $label;

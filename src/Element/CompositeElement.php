@@ -38,7 +38,7 @@ class CompositeElement extends Element implements CompositeElementInterface
             }
         }
 
-        return new NullElement();
+        return new NullElement('');
     }
 
     public function getAll(): SplObjectStorage
