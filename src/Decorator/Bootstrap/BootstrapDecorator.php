@@ -21,14 +21,13 @@ class BootstrapDecorator implements DecoratorInterface
 
     public function getHtml(): string
     {
-        if ($this->element instanceof ElementWithValue) {
-            if ($this->element->getError()) {
-                $this->element->addClass([$this->getErrorClass()]);
-            }
-            if ($this->element->isValid()) {
-                $this->element->addClass([$this->getSuccessClass()]);
-            }
+        if ($this->element->isError()) {
+            $this->element->addClass([$this->getErrorClass()]);
         }
+        if ($this->element->isValid()) {
+            $this->element->addClass([$this->getSuccessClass()]);
+        }
+        $this->element->addClass(['mb-2']);
         $className = explode('\\', get_class($this->element));
         $className = end($className);
         $template = $this->path . '/' . $className . '.php';

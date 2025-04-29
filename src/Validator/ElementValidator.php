@@ -3,54 +3,71 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Validator;
 
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
+use Kavalhub\FormGenerator\Form\InputSubmit;
 use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
-readonly class ElementValidator implements ElementValidatorInterface
+class ElementValidator implements ElementValidatorInterface
 {
-    public function __construct(private RequestInterface $request, private ElementInterface $element)
+    private array $checkList = [];
+
+    public function __construct(private readonly RequestInterface $request)
     {
     }
 
-    public function validate(): bool
+    public function submit(InputSubmit $submit): bool
     {
-        $validate = $this->getValidate();
-        $value = $this->request->get($this->element->getName());
+        return !empty($this->request->get($submit->getFormName()));
+    }
+
+    public function exec(ElementInterface $element): bool
+    {
+        if ($element->getComposite()) {
+            foreach (
+                $element->getComposite()
+                    ->getAll() as $composite
+            ) {
+                $this->checkList[] = (new self($this->request))->exec($composite);
+            }
+        }
+        if ($element instanceof ElementWithValue) {
+            $this->request($element);
+            $this->required($element);
+        }
+        foreach ($element->getCallbackValidatorList() as $callbackValidator) {
+            $this->checkList[] = $callbackValidator($element);
+        }
+        if (!in_array(false, $this->checkList, true)) {
+            $element->setValid();
+            return true;
+        }
+
+        return false;
+    }
+
+    private function request(ElementWithValue $element): void
+    {
+        $value = $this->request->get($element->getFormName());
         if (isset($value)) {
             foreach ($value as $item) {
-                $this->element->setValue((string)$item);
-                if ($item === '' && $this->element->isRequired()) {
-                    $this->element->addError(['Поле должно быть заполнено']);
-                    $validate[] = false;
-                }
+                $element->setValue((string)$item);
             }
-        } else {
-            return false;
         }
-        foreach ($this->element->getCallbackValidatorList() as $callbackValidator) {
-            $validate[] = $callbackValidator($this->element);
-        }
-        if (!in_array(false, $validate, true)) {
-            $this->element->setValid();
-        }
-        return !in_array(false, $validate, true);
     }
 
-    public function getValidate(): array
+    private function required(ElementWithValue $element): void
     {
-        $validate = ['true'];
-        if ($this->element->getComposite()) {
-            foreach (
-                $this->element->getComposite()
-                    ->getAll() as $child
-            ) {
-                if (method_exists($child, 'getName')) {
-                    $validate[] = (new self($this->request, $child))->validate();
+        if ($element->isRequired()) {
+            $element->addCallbackValidator(function (ElementWithValue $element) {
+                if (empty($element->getValue())) {
+                    $element->addError(['Поле должно быть заполнено']);
+                    return false;
                 }
-            }
-        }
 
-        return $validate;
+                return true;
+            });
+        }
     }
 }

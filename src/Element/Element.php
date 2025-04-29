@@ -5,6 +5,7 @@ namespace Kavalhub\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\CallbackValidator;
+use Kavalhub\FormGenerator\Element\Trait\Error;
 use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
@@ -16,11 +17,12 @@ use SplObjectStorage;
 class Element implements ElementInterface
 {
     use CallbackValidator;
-    use TraitCollector;
+    use Error;
     use HtmlClass;
     use HtmlHidden;
     use HtmlId;
     use HtmlRequired;
+    use TraitCollector;
     use Valid;
 
     protected ElementInterface $parent;
