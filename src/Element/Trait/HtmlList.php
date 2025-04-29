@@ -21,6 +21,6 @@ trait HtmlList
 
     protected function getHtmlList(): string
     {
-        return !empty($this->getList()) ? ' list="' . $this->getList() . '"' : '';
+        return !empty($this->list) ? ' list="' . $this->getList() . '"' : '';
     }
 }

@@ -9,12 +9,14 @@ use Kavalhub\FormGenerator\Element\ElementWithValue;
 class Datalist extends CompositeElement
 {
 
+    private const POSTFIX = '_list';
+
     public function __construct(ElementWithValue $element, array $item = [])
     {
         parent::__construct();
-        $this->setId($element->getId() . '_list');
-        $element->setList($this->getId() . '_list');
-        $this->setItem($item);
+        $this->setId(id: $element->getId() . self::POSTFIX);
+        $element->setList(list: $this->getId());
+        $this->setItem(item: $item);
     }
 
     public function setItem(array $item): self

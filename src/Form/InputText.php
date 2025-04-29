@@ -12,7 +12,6 @@ use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 
 class InputText extends ElementWithValue
 {
-    use HtmlList;
     use HtmlMaxlength;
     use HtmlPattern;
     use HtmlPlaceholder;

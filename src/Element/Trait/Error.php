@@ -5,22 +5,36 @@ namespace Kavalhub\FormGenerator\Element\Trait;
 
 trait Error
 {
-    protected array $error = [];
+    protected bool $error = false;
+    protected array $errorList = [];
 
-    public function getError(): array
+    public function setError(bool $error = true): self
+    {
+        $this->error = $error;
+
+        return $this;
+    }
+
+    public function isError(): bool
     {
         return $this->error;
     }
 
+    public function getError(): array
+    {
+        return $this->errorList;
+    }
+
     public function addError(array $error): self
     {
-        $this->error = array_merge($this->error, $error);
+        $this->setError();
+        $this->errorList = array_merge($this->errorList, $error);
 
         return $this;
     }
 
     protected function getHtmlError(): string
     {
-        return !empty($this->error) ? implode('<br>', $this->error) : '';
+        return !empty($this->errorList) ? implode('<br>', $this->errorList) : '';
     }
 }

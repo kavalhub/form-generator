@@ -14,6 +14,11 @@ trait HtmlChecked
         return $this;
     }
 
+    public function isChecked(): bool
+    {
+        return $this->checked;
+    }
+
     protected function getHtmlChecked(): string
     {
         return $this->checked ? ' checked' : '';

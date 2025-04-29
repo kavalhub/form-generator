@@ -29,12 +29,14 @@ class CompositeElement extends Element implements CompositeElementInterface
         return $this;
     }
 
-    public function getById(string $id): Element
+    public function getByName(string $name): Element
     {
         $this->elementStorage->rewind();
         foreach ($this->elementStorage as $element) {
-            if ($this->elementStorage->getInfo() === $id) {
-                return $element;
+            if ($element instanceof ElementWithName) {
+                if ($element->getId() === $name) {
+                    return $element;
+                }
             }
         }
 

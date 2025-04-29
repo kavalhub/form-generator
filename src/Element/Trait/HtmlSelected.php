@@ -14,6 +14,11 @@ trait HtmlSelected
         return $this;
     }
 
+    public function isSelected(): bool
+    {
+        return $this->selected;
+    }
+
     protected function getHtmlSelected(): string
     {
         return $this->selected ? ' selected' : '';

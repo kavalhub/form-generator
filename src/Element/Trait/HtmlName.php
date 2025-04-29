@@ -10,7 +10,7 @@ trait HtmlName
 
     public function getName(): string
     {
-        return !empty($this->parent) ? $this->parent->getId() . '_' . $this->name : $this->name;
+        return $this->name;
     }
 
     public function setName(string $name): self
@@ -20,16 +20,15 @@ trait HtmlName
         return $this;
     }
 
-    public function setMultiple(bool $value = true): self
+    public function getFormName(): string
     {
-        $this->multiple = $value;
-
-        return $this;
+        return !empty($this->parent) ? $this->parent->getId() . '_' . $this->name : $this->name;
     }
+
     protected function getHtmlName(): string
     {
         $multiple = $this->multiple ? '[]' : '';
 
-        return !empty($this->getName()) ? ' name="' . $this->getName() . $multiple . '"' : '';
+        return !empty($this->getName()) ? ' name="' . $this->getFormName() . $multiple . '"' : '';
     }
 }

@@ -17,6 +17,7 @@ class InputRadio extends ElementWithValue
     public function __construct(string $name, string $value)
     {
         parent::__construct($name);
+        $this->setId($this->getId() . '_'. $value);
         $this->setType('radio');
         $this->value = $value;
     }
