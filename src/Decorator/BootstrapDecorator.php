@@ -6,7 +6,7 @@ namespace Kavalhub\FormGenerator\Decorator;
 use Kavalhub\FormGenerator\Decorator\Interface\DecoratorInterface;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 
-class BootstrapDecorator implements DecoratorInterface
+class BootstrapDecorator
 {
     private string $path = '/var/www/office-planet.ru/web/BootstrapDecorator';
     private string $errorClass = 'is-invalid';

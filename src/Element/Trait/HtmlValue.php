@@ -5,13 +5,25 @@ namespace Kavalhub\FormGenerator\Element\Trait;
 
 trait HtmlValue
 {
-    protected string $value = '';
+    protected string $value;
+    protected string $defaultValue = '';
+
+    public function getDefaultValue(): string
+    {
+        return $this->defaultValue;
+    }
+
+    public function setDefaultValue(string $defaultValue): self
+    {
+        $this->defaultValue = $defaultValue;
+
+        return $this;
+    }
 
     public function getValue(): string
     {
-        return $this->value;
+        return $this->value ?? $this->defaultValue;
     }
-
     public function setValue(string $value): self
     {
         $this->value = $value;
@@ -21,6 +33,6 @@ trait HtmlValue
 
     protected function getHtmlValue(): string
     {
-        return !empty($this->value) ? ' value="' . htmlspecialchars($this->value) . '"' : '';
+        return !empty($this->getValue()) ? ' value="' . htmlspecialchars($this->getValue()) . '"' : '';
     }
 }

@@ -11,6 +11,7 @@ class ElementWithName extends Element
 
     public function __construct(string $name)
     {
+        parent::__construct();
         $this->setName($name);
     }
 

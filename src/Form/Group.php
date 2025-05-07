@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\CompositeElement;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 
 class Group extends CompositeElement
@@ -16,15 +17,12 @@ class Group extends CompositeElement
         parent::__construct();
     }
 
-    public function getHtml(string $tag = null): string
+    public function getHtml(): string
     {
-        $openTag = $tag ? '<' . $tag . '>' : '';
-        $closeTag = $tag ? '</' . $tag . '>' : '';
-        $html = '';
         foreach ($this->elementStorage as $element) {
-            $html .= $openTag . $element->getHtml() . $closeTag;
+            $html .= $element->getHtml();
         }
 
-        return '<div' . $this->getHtmlTrait() . '>' . $html . '</div>';
+        return '<div' . $this->getHtmlTrait(['HtmlName']) . '>' . $html . '</div>';
     }
 }

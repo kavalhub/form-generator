@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
-use ReflectionClass;
-
 trait CallbackValidator
 {
     protected array $callbackValidatorList = [];

@@ -10,6 +10,8 @@ use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
 use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
+use Kavalhub\FormGenerator\Element\Trait\Observable;
+use Kavalhub\FormGenerator\Element\Trait\Path;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
 use Kavalhub\FormGenerator\Element\Trait\Valid;
 use SplObjectStorage;
@@ -22,10 +24,28 @@ class Element implements ElementInterface
     use HtmlHidden;
     use HtmlId;
     use HtmlRequired;
+    use Observable;
+    use Path;
     use TraitCollector;
     use Valid;
 
     protected ElementInterface $parent;
+    protected SplObjectStorage $elementStorage;
+
+    public function __construct()
+    {
+        $this->observer = new SplObjectStorage();
+    }
+
+    public function getValue(): ?string
+    {
+        return null;
+    }
+
+    public function getValueArray(): array
+    {
+        return [];
+    }
 
     public function setParent(ElementInterface $parent): self
     {

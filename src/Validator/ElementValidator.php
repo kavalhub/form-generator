@@ -33,7 +33,7 @@ class ElementValidator implements ElementValidatorInterface
             }
         }
         if ($element instanceof ElementWithValue) {
-            $this->request($element);
+            $this->request->setValue($element);
             $this->required($element);
         }
         foreach ($element->getCallbackValidatorList() as $callbackValidator) {
@@ -45,16 +45,6 @@ class ElementValidator implements ElementValidatorInterface
         }
 
         return false;
-    }
-
-    private function request(ElementWithValue $element): void
-    {
-        $value = $this->request->get($element->getFormName());
-        if (isset($value)) {
-            foreach ($value as $item) {
-                $element->setValue((string)$item);
-            }
-        }
     }
 
     private function required(ElementWithValue $element): void
