@@ -3,21 +3,25 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Form;
 
-use Kavalhub\FormGenerator\Element\Element;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlSelected;
-use Kavalhub\FormGenerator\Element\Trait\HtmlValue;
 use Kavalhub\FormGenerator\Element\Trait\Label;
 
-class Option extends Element
+class Option extends ElementWithValue
 {
     use HtmlSelected;
-    use HtmlValue;
     use Label;
 
     public function __construct(string $value = '', string $label = '')
     {
+        parent::__construct('');
         $this->value = $value;
         $this->label = $label;
+    }
+
+    public function getFormName(): string
+    {
+        return $this->parent->getFormName();
     }
 
     public function setValue(string $value): self
@@ -30,6 +34,6 @@ class Option extends Element
 
     public function getHtml(): string
     {
-        return '<option' . $this->getHtmlTrait(['HtmlId']) . '>' . $this->getLabel() . '</option>';
+        return '<option' . $this->getHtmlTrait(['HtmlId','HtmlName']) . '>' . $this->getLabel() . '</option>';
     }
 }

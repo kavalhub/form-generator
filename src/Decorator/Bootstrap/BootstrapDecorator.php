@@ -30,12 +30,13 @@ class BootstrapDecorator implements DecoratorInterface
         $this->element->addClass(['mb-2']);
         $className = explode('\\', get_class($this->element));
         $className = end($className);
-        $template = $this->path . '/' . $className . '.php';
-        if (file_exists($template)) {
-            return include $template;
-        }
 
-        return $this->element->getHtml();
+        return match (true) {
+            file_exists($this->element->getPath() . '/' . $className . '.php') => include $this->element->getPath()
+                . '/' . $className . '.php',
+            file_exists($this->path . '/' . $className . '.php') => include $this->path . '/' . $className . '.php',
+            default => $this->element->getHtml(),
+        };
     }
 
     public function getErrorClass(): string
@@ -46,5 +47,12 @@ class BootstrapDecorator implements DecoratorInterface
     public function getSuccessClass(): string
     {
         return $this->successClass;
+    }
+
+    public function setTemplate(string $path): DecoratorInterface
+    {
+        $this->path = $path;
+
+        return $this;
     }
 }
