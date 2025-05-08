@@ -86,8 +86,7 @@ class CompositeElement extends Element implements CompositeElementInterface
                 return $element->getByName($name);
             }
             if ($element instanceof ElementWithName) {
-                $nameList =explode('_',$element->getName());
-                if (array_pop($nameList) === $name) {
+                if ($element->getName() === $name) {
                     return $element;
                 }
             }

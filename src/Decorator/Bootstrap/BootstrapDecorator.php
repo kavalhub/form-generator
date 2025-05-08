@@ -24,7 +24,7 @@ class BootstrapDecorator implements DecoratorInterface
         if ($this->element->isError()) {
             $this->element->addClass([$this->getErrorClass()]);
         }
-        if ($this->element->isValid()) {
+        if ($this->element->isValid() && !empty($this->element->getValue())) {
             $this->element->addClass([$this->getSuccessClass()]);
         }
         $this->element->addClass(['mb-2']);
