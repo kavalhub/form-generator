@@ -54,6 +54,11 @@ class Element implements ElementInterface
         return $this;
     }
 
+    public function getParent(): ElementInterface
+    {
+        return $this->parent;
+    }
+
     public function getComposite(): ?self
     {
         return null;
