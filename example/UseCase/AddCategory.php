@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\UseCase;
+namespace Kavalhub\Example\UseCase;
 
-use Kavalhub\FormGenerator\Domain\Category;
-use Kavalhub\FormGenerator\Env\Storage;
+use Kavalhub\Example\Domain\Category;
+use Kavalhub\Example\Env\Storage;
 
 readonly class AddCategory
 {

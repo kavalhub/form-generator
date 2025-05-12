@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\UseCase;
+namespace Kavalhub\Example\UseCase;
 
-use Kavalhub\FormGenerator\Env\Storage;
+use Kavalhub\Example\Env\Storage;
 use Generator;
 
-class GetCategoryList
+readonly class GetCategoryList
 {
-    public function __construct(private readonly Storage $storage)
+    public function __construct(private Storage $storage)
     {
     }
 

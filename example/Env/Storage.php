@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\Env;
+namespace Kavalhub\Example\Env;
 
-use Kavalhub\FormGenerator\Domain\Category;
+use Kavalhub\Example\Domain\Category;
 use Generator;
 use PDO;
 
