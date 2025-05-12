@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\Domain;
+namespace Kavalhub\Example\Domain;
 
 readonly class Product
 {

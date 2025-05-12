@@ -7,13 +7,13 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Kavalhub\\FormGenerator\\": "src/"
+            "Kavalhub\\FormGenerator\\": "src/",
+            "Kavalhub\\Example\\": "example/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Kavalhub\\Tests\\FormGenerator\\": "tests/",
-            "Kavalhub\\FormGenerator\\": "example/"
+            "Kavalhub\\Tests\\FormGenerator\\": "tests/"
         }
     },
     "authors": [
