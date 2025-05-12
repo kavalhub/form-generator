@@ -12,7 +12,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Kavalhub\\Tests\\FormGenerator\\": "tests/"
+            "Kavalhub\\Tests\\FormGenerator\\": "tests/",
+            "Kavalhub\\FormGenerator\\": "example/"
         }
     },
     "authors": [
