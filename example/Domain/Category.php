@@ -5,11 +5,11 @@ namespace Kavalhub\Example\Domain;
 
 readonly class Category
 {
-    public function __construct(private string $name, private string $uuid)
+    public function __construct(private string $name, private ?string $uuid = null)
     {
     }
 
-    public function getUuid(): string
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }

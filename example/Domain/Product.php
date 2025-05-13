@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Kavalhub\Example\Domain;
 
+use Kavalhub\Example\Domain\Product\ProductFacetCollection;
+
 readonly class Product
 {
     public function __construct(
-        private string $name, private float $price, private Category $category, private FacetCollection $facets,
+        private string $name, private float $price, private Category $category, private ProductFacetCollection $facets,
         private ?string $uuid = null
     ) {
     }
@@ -31,7 +33,7 @@ readonly class Product
         return $this->category;
     }
 
-    public function getFacets(): FacetCollection
+    public function getFacets(): ProductFacetCollection
     {
         return $this->facets;
     }

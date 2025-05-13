@@ -34,6 +34,7 @@ class InputCheckbox extends ElementWithValue
 
     public function setValue(string $value): self
     {
+        $this->setChecked(false);
         if ($value === $this->getDefaultValue()) {
             $this->setChecked();
         }
