@@ -11,25 +11,26 @@ use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class ElementValidator implements ElementValidatorInterface
 {
+    private ?bool $valid = null;
     private array $checkList = [];
 
     public function __construct(private readonly RequestInterface $request)
     {
     }
 
-    public function submit(InputSubmit $submit): bool
+    public function checkSubmit(InputSubmit $submit): bool
     {
         return !empty($this->request->get($submit->getFormName()));
     }
 
-    public function exec(ElementInterface $element): bool
+    public function handle(ElementInterface $element): bool
     {
         if ($element->getComposite()) {
             foreach (
                 $element->getComposite()
                     ->getAll() as $composite
             ) {
-                $this->checkList[] = (new self($this->request))->exec($composite);
+                $this->checkList[] = (new self($this->request))->handle($composite);
             }
         }
         if ($element instanceof ElementWithValue) {
@@ -41,8 +42,10 @@ class ElementValidator implements ElementValidatorInterface
         }
         if (!in_array(false, $this->checkList, true)) {
             $element->setValid();
+            $this->valid = true;
             return true;
         }
+        $this->valid = false;
 
         return false;
     }
@@ -59,5 +62,10 @@ class ElementValidator implements ElementValidatorInterface
                 return true;
             });
         }
+    }
+
+    public function isValid(): ?bool
+    {
+        return $this->valid;
     }
 }

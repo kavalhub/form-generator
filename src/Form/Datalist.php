@@ -28,13 +28,12 @@ class Datalist extends CompositeElement
         return $this;
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
-        $html = '';
         foreach ($this->elementStorage as $element) {
-            $html .= $element->getHtml();
+            $value .= $element->getHtml();
         }
 
-        return '<datalist' . $this->getHtmlTrait() . '>' . $html . '</datalist>';
+        return '<datalist' . $this->getHtmlTrait() . '>' . $value . '</datalist>';
     }
 }

@@ -17,12 +17,12 @@ class Group extends CompositeElement
         parent::__construct();
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         foreach ($this->elementStorage as $element) {
-            $html .= $element->getHtml();
+            $value .= $element->getHtml();
         }
 
-        return '<div' . $this->getHtmlTrait(['HtmlName']) . '>' . $html . '</div>';
+        return '<div' . $this->getHtmlTrait(['HtmlName']) . '>' . $value . '</div>';
     }
 }

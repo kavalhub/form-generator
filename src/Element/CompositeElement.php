@@ -14,9 +14,9 @@ class CompositeElement extends Element implements CompositeElementInterface
 {
     protected SplObjectStorage $elementStorage;
 
-    public function __construct()
+    public function __construct(string $tag = '')
     {
-        parent::__construct();
+        parent::__construct($tag);
         $this->elementStorage = new SplObjectStorage();
     }
 
@@ -82,17 +82,40 @@ class CompositeElement extends Element implements CompositeElementInterface
     {
         $this->elementStorage->rewind();
         foreach ($this->elementStorage as $element) {
-            if ($element->getComposite()) {
-                return $element->getByName($name);
-            }
-            if ($element instanceof ElementWithName) {
+            if (method_exists($element , 'getName')) {
                 if ($element->getName() === $name) {
                     return $element;
                 }
             }
+            if ($element->getComposite()) {
+                $childElement = $element->getByName($name);
+                if (method_exists($childElement , 'getName')) {
+                    if ($childElement->getName() === $name) {
+                        return $childElement;
+                    }
+                }
+            }
+
         }
 
         return new NullElement('');
+    }
+
+    public function getByType(string $type): self
+    {
+        $new = new self();
+        $this->elementStorage->rewind();
+        foreach ($this->elementStorage as $element) {
+            if ($element instanceof $type) {
+                $new->addElement($element);
+                continue;
+            }
+            if ($element->getComposite()) {
+                $element->getByType($type);
+            }
+        }
+
+        return $new;
     }
 
     public function notify(): self
@@ -110,5 +133,14 @@ class CompositeElement extends Element implements CompositeElementInterface
     public function getAll(): SplObjectStorage
     {
         return $this->elementStorage;
+    }
+
+    public function getHtml(string $value = ''): string
+    {
+        foreach ($this->elementStorage as $element) {
+            $value .= $element->getHtml();
+        }
+
+        return parent::getHtml($value);
     }
 }

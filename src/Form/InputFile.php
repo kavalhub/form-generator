@@ -18,7 +18,7 @@ class InputFile extends ElementWithValue
         $this->setType('file');
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

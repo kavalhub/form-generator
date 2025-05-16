@@ -18,7 +18,7 @@ class InputColor extends ElementWithValue
         $this->setType('color');
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

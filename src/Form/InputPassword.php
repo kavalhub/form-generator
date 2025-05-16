@@ -18,7 +18,7 @@ class InputPassword extends ElementWithValue
         $this->setType('password');
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

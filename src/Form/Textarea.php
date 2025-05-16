@@ -12,7 +12,7 @@ class Textarea extends ElementWithValue
     use HtmlMaxlength;
     use HtmlPlaceholder;
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<textarea' . $this->getHtmlTrait(['HtmlValue']) . '>' . $this->getValue() . '</textarea>';
     }

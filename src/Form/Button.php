@@ -10,7 +10,7 @@ class Button extends ElementWithValue
 {
     use Label;
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<button' . $this->getHtmlTrait() . '>' . $this->getLabel() . '</button>';
     }

@@ -21,11 +21,11 @@ trait HtmlId
 
     protected function getThisId(): string
     {
-        return $this->id ?? $this->name ?? static::class ?? '';
+        return $this->id ?? $this->name ?? '';
     }
 
     protected function getHtmlId(): string
     {
-        return ' id="' . $this->getId() . '"';
+        return !empty($this->getThisId()) ?' id="' . $this->getId() . '"' : '';
     }
 }

@@ -23,7 +23,7 @@ class InputText extends ElementWithValue
         $this->setType('text');
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

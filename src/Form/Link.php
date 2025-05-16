@@ -19,7 +19,7 @@ class Link extends ElementWithName
         $this->setLabel($label ?: $href);
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<a' . $this->getHtmlTrait(['HtmlName']) . '>' . $this->getLabel() . '</a>';
     }

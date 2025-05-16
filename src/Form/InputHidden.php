@@ -18,7 +18,7 @@ class InputHidden extends ElementWithValue
         $this->setType('hidden');
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

@@ -60,13 +60,12 @@ class Select extends CompositeElement
         return $this;
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
-        $html = '';
         foreach ($this->elementStorage as $element) {
-            $html .= $element->getHtml();
+            $value .= $element->getHtml();
         }
 
-        return '<select' . $this->getHtmlTrait() . '>' . $html . '</select>';
+        return '<select' . $this->getHtmlTrait() . '>' . $value . '</select>';
     }
 }

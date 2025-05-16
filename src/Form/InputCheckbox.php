@@ -34,7 +34,7 @@ class InputCheckbox extends ElementWithValue
 
     public function setValue(string $value): self
     {
-        $this->setChecked(false);
+        //$this->setChecked(false);
         if ($value === $this->getDefaultValue()) {
             $this->setChecked();
         }
@@ -46,7 +46,7 @@ class InputCheckbox extends ElementWithValue
         return $this;
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

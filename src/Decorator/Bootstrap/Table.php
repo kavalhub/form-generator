@@ -10,5 +10,5 @@ $error =
     !empty($this->element->getError()) ? '<div class="invalid-feedback">' . implode('<br>', $this->element->getError())
         . '</div>' : '';
 
-$this->element->addClass(['px-2']);
-return '<div' . $this->element->getHtmlTrait(['HtmlName']) . '>' . $html . '</div>' . $error;
+$this->element->addClass(['table', 'px-2']);
+return '<table' . $this->element->getHtmlTrait(['HtmlName']) . '>' . $html . '</table>' . $error;

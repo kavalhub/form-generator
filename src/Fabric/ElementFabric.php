@@ -9,6 +9,13 @@ use RuntimeException;
 
 class ElementFabric implements ElementFabricInterface
 {
+    public const ELEMENT = 'element';
+    public const NAME = 'name';
+    public const METHOD = 'method';
+    public const BLOCK = 'block';
+    public const ADD_ELEMENT = 'addElement';
+    public const ADD_ELEMENT_BLOCK = 'addElementBlock';
+
     public static function create(array $elementData): ElementInterface
     {
         self::validateElementData($elementData);
@@ -25,10 +32,10 @@ class ElementFabric implements ElementFabricInterface
 
     private static function validateElementData(array $elementData): void
     {
-        if (!class_exists($elementData['element'])) {
+        if (empty($elementData[self::ELEMENT]) || !class_exists($elementData[self::ELEMENT])) {
             throw new RuntimeException('Element class does not exist.');
         }
-        if (empty($elementData['name'])) {
+        if (empty($elementData[self::NAME])) {
             throw new RuntimeException('Element name should not be empty.');
         }
     }
@@ -46,9 +53,10 @@ class ElementFabric implements ElementFabricInterface
 
     private static function invokeMethod(ElementInterface $element, string $method, $value): void
     {
-        if ($method === 'addElement') {
-            $element->addElement(self::create($value));
-        } elseif ($method === 'addElementBlock') {
+        if ($method === self::ADD_ELEMENT) {
+            $add = is_array($value) ? self::create($value) : $value;
+            $element->addElement($add);
+        } elseif ($method === self::ADD_ELEMENT_BLOCK) {
             self::addElementBlock($element, $value);
         } else {
             $element->$method($value);

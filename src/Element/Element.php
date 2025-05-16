@@ -14,6 +14,7 @@ use Kavalhub\FormGenerator\Element\Trait\Observable;
 use Kavalhub\FormGenerator\Element\Trait\Path;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
 use Kavalhub\FormGenerator\Element\Trait\Valid;
+use Kavalhub\FormGenerator\Form\Label;
 use SplObjectStorage;
 
 class Element implements ElementInterface
@@ -32,7 +33,7 @@ class Element implements ElementInterface
     protected ElementInterface $parent;
     protected SplObjectStorage $elementStorage;
 
-    public function __construct()
+    public function __construct(protected string $tag = 'div')
     {
         $this->observer = new SplObjectStorage();
     }
@@ -67,5 +68,20 @@ class Element implements ElementInterface
     public function getAll(): SplObjectStorage
     {
         return new SplObjectStorage();
+    }
+
+    public function snapLabel(string $label = ''): self
+    {
+        if (!empty($this->parent)) {
+            $test = $this->parent->getByType(Label::class)
+                ->getByName($this->getName());
+        }
+
+        return $this;
+    }
+
+    public function getHtml(string $value = ''): string
+    {
+        return '<' . $this->tag . $this->getHtmlTrait() . '>' . $value . '</' . $this->tag .'>';
     }
 }
