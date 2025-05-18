@@ -5,6 +5,9 @@ namespace Kavalhub\FormGenerator\Fabric;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Fabric\Interface\ElementFabricInterface;
+use Kavalhub\FormGenerator\Form\InputCheckbox;
+use Kavalhub\FormGenerator\Form\InputRadio;
+use Kavalhub\FormGenerator\Form\Select;
 use RuntimeException;
 
 class ElementFabric implements ElementFabricInterface
@@ -15,6 +18,8 @@ class ElementFabric implements ElementFabricInterface
     public const BLOCK = 'block';
     public const ADD_ELEMENT = 'addElement';
     public const ADD_ELEMENT_BLOCK = 'addElementBlock';
+    public const ADD_CALLBACK_VALIDATOR = 'addCallbackValidator';
+    public const ATTACH_OBSERVER = 'attachObserver';
 
     public static function create(array $elementData): ElementInterface
     {
@@ -68,5 +73,14 @@ class ElementFabric implements ElementFabricInterface
         foreach ($value['block'] as $block) {
             $element->addElement(self::create(['element' => $value['element'], ...$block]));
         }
+    }
+
+    public static function getClassName(string $name): string
+    {
+        return match ($name) {
+            'InputCheckbox' => InputCheckbox::class,
+            'InputRadio' => InputRadio::class,
+            'Select' => Select::class,
+        };
     }
 }

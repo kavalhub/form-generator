@@ -18,7 +18,8 @@ readonly class Storage
         $query = $this->pdo->query(
             'SELECT tc.id AS id, 
                             tc.name AS name, 
-                            tpc.id AS product
+                            tpc.id AS product,
+                            COUNT(tpc.id) AS count
                         FROM temp_category AS tc
                                  LEFT JOIN temp_product_category AS tpc ON tpc.category_id = tc.id
                         GROUP BY tc.id, sort
@@ -34,6 +35,7 @@ readonly class Storage
         $query = $this->pdo->query(
             'SELECT tp.id as id,
                             tc.name AS category,
+                            tf.view AS view,
                             tf.name AS facet_name,
                             tpf.value AS facet_value,
                             tp.name AS name,

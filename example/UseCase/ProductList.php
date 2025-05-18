@@ -5,6 +5,8 @@ namespace Kavalhub\Example\UseCase;
 
 use Kavalhub\Example\Env\Storage;
 use Generator;
+use Kavalhub\FormGenerator\Fabric\ElementFabric;
+use Kavalhub\FormGenerator\Form\InputCheckbox;
 
 class ProductList
 {
@@ -23,14 +25,16 @@ class ProductList
 
     public function get(): Generator
     {
-        return $this->storage->getProductList(!empty($this->filter) ? 'WHERE ' . implode(' ', $this->filter) : '');
+        return $this->storage->getProductList(!empty($this->filter) ? 'WHERE ' . implode(' AND ', $this->filter) : '');
     }
 
     public function getFacet(): array
     {
         $array = [];
         foreach ($this->get() as $product) {
-            $array[$product['facet_name']][$product['facet_value']] = $product['facet_value'];
+            $array[$product['facet_name']][ElementFabric::ELEMENT] = $product['view'];
+            $array[$product['facet_name']][ElementFabric::NAME] = $product['view'];
+            $array[$product['facet_name']]['value'][$product['facet_value']] = $product['facet_value'];
         }
 
         return $array;

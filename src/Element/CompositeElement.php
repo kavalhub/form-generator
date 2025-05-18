@@ -33,6 +33,13 @@ class CompositeElement extends Element implements CompositeElementInterface
         return $this;
     }
 
+    public function removeElement(ElementInterface $element): self
+    {
+        $this->elementStorage->detach($element);
+
+        return $this;
+    }
+
     public function getValueArray(): array
     {
         $values = [];
@@ -78,24 +85,29 @@ class CompositeElement extends Element implements CompositeElementInterface
         return $this;
     }
 
-    public function getByName(string $name): Element
+    public function getByName(string $name, bool $extract = false): Element
     {
         $this->elementStorage->rewind();
         foreach ($this->elementStorage as $element) {
-            if (method_exists($element , 'getName')) {
+            if (method_exists($element, 'getName')) {
                 if ($element->getName() === $name) {
+                    if ($extract) {
+                        $this->removeElement($element);
+                    }
                     return $element;
                 }
             }
             if ($element->getComposite()) {
                 $childElement = $element->getByName($name);
-                if (method_exists($childElement , 'getName')) {
+                if (method_exists($childElement, 'getName')) {
                     if ($childElement->getName() === $name) {
+                        if ($extract) {
+                            $this->removeElement($childElement);
+                        }
                         return $childElement;
                     }
                 }
             }
-
         }
 
         return new NullElement('');
@@ -107,7 +119,7 @@ class CompositeElement extends Element implements CompositeElementInterface
         $this->elementStorage->rewind();
         foreach ($this->elementStorage as $element) {
             if ($element instanceof $type) {
-                $new->addElement($element);
+                $new->elementStorage->attach($element);
                 continue;
             }
             if ($element->getComposite()) {

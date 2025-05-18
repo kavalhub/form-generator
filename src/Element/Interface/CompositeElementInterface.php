@@ -8,5 +8,8 @@ use Kavalhub\FormGenerator\Element\Element;
 interface CompositeElementInterface
 {
     public function addElement(ElementInterface $element): self;
-    public function getByName(string $name): Element;
+
+    public function removeElement(ElementInterface $element): self;
+
+    public function getByName(string $name, bool $extract = false): Element;
 }
