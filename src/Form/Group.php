@@ -11,10 +11,10 @@ class Group extends CompositeElement
 {
     use HtmlName;
 
-    public function __construct(string $name)
+    public function __construct(string $name, string $tag = 'div')
     {
         $this->setName($name);
-        parent::__construct();
+        parent::__construct($tag);
     }
 
     public function getHtml(string $value = ''): string
@@ -23,6 +23,6 @@ class Group extends CompositeElement
             $value .= $element->getHtml();
         }
 
-        return '<div' . $this->getHtmlTrait(['HtmlName']) . '>' . $value . '</div>';
+        return '<' . $this->tag . $this->getHtmlTrait(['HtmlName']) . '>' . $value . '</' . $this->tag . '>';
     }
 }

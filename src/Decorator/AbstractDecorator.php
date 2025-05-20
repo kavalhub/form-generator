@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\Decorator\Bootstrap;
+namespace Kavalhub\FormGenerator\Decorator;
 
 use Kavalhub\FormGenerator\Decorator\Interface\DecoratorInterface;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 
-class BootstrapDecorator implements DecoratorInterface
+abstract class AbstractDecorator implements DecoratorInterface
 {
-    private string $path = __DIR__;
-    private string $errorClass = 'is-invalid';
-    private string $successClass = 'is-valid';
-    private ElementInterface $element;
+    protected string $path = __DIR__;
+    protected string $errorClass = '';
+    protected string $successClass = '';
+    protected ElementInterface $element;
 
     public function __construct(ElementInterface $element)
     {
@@ -27,8 +27,6 @@ class BootstrapDecorator implements DecoratorInterface
         if ($this->element->isValid() && !empty($this->element->getValue())) {
             $this->element->addClass([$this->getSuccessClass()]);
         }
-
-        $this->element->addClass(['mb-2']);
 
         $className = (new \ReflectionClass($this->element))->getShortName();
         $parentClassName = (new \ReflectionClass(get_parent_class($this->element)))->getShortName();

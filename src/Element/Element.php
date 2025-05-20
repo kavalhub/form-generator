@@ -7,6 +7,7 @@ use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\CallbackValidator;
 use Kavalhub\FormGenerator\Element\Trait\Error;
 use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
+use Kavalhub\FormGenerator\Element\Trait\HtmlData;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
 use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
@@ -22,6 +23,7 @@ class Element implements ElementInterface
     use CallbackValidator;
     use Error;
     use HtmlClass;
+    use HtmlData;
     use HtmlHidden;
     use HtmlId;
     use HtmlRequired;
@@ -70,14 +72,9 @@ class Element implements ElementInterface
         return new SplObjectStorage();
     }
 
-    public function snapLabel(string $label = ''): self
+    public function getTag(): string
     {
-        if (!empty($this->parent)) {
-            $test = $this->parent->getByType(Label::class)
-                ->getByName($this->getName());
-        }
-
-        return $this;
+        return $this->tag;
     }
 
     public function getHtml(string $value = ''): string

@@ -6,7 +6,7 @@ namespace Kavalhub\Example\UseCase;
 use Kavalhub\Example\Env\Storage;
 use Generator;
 
-class CategoryList
+class FacetList
 {
     private array $filter = [];
 
@@ -23,13 +23,13 @@ class CategoryList
 
     public function get(): Generator
     {
-        return $this->storage->getCategoryList(!empty($this->filter) ? 'WHERE ' . implode(' AND ', $this->filter) : '');
+        return $this->storage->getFacetList(!empty($this->filter) ? 'WHERE ' . implode(' AND ', $this->filter) : '');
     }
 
     public function __toArray(): array
     {
         $array = [];
-        foreach ($this->get() as $category) {
+        foreach ($this->storage->getFacetList() as $category) {
             $array[] = $category;
         }
 

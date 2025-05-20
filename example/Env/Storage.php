@@ -6,24 +6,53 @@ namespace Kavalhub\Example\Env;
 use Kavalhub\Example\Domain\Category;
 use Generator;
 use PDO;
+use PDOException;
 
 readonly class Storage
 {
-    public function __construct(private PDO $pdo)
+    private PDO $pdo;
+
+    public function __construct()
     {
+        $dsn = 'mysql:host=172.19.0.1;port=3325;dbname=dks_slim;charset=UTF8';
+        $username = 'wwwadmin';
+        $password = 'gfhjkm';
+        try {
+            $this->pdo = new PDO($dsn, $username, $password);
+        } catch (PDOException $e) {
+            exit ("Ошибка подключения к MySQL: " . $e->getMessage());
+        }
     }
 
-    public function getCategoryList(): Generator
+    public function getCategoryList(string $where = ''): Generator
     {
         $query = $this->pdo->query(
             'SELECT tc.id AS id, 
                             tc.name AS name, 
-                            tpc.id AS product,
+                            tc.sort AS sort,
                             COUNT(tpc.id) AS count
                         FROM temp_category AS tc
                                  LEFT JOIN temp_product_category AS tpc ON tpc.category_id = tc.id
+                        ' . $where . '
                         GROUP BY tc.id, sort
                         ORDER BY sort;'
+        );
+        while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            yield $row;
+        }
+    }
+
+    public function getFacetList(string $where = ''): Generator
+    {
+        $query = $this->pdo->query(
+            'SELECT tf.id AS id, 
+                            tf.name AS name, 
+                            COUNT(tpf.id) AS count
+                        FROM temp_facet AS tf
+                                 LEFT JOIN temp_product_facet AS tpf ON tpf.facet_id = tf.id
+                        ' . $where . '                                             
+                        GROUP BY tf.id
+                        ORDER BY tf.name;'
         );
         while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
             yield $row;
@@ -35,7 +64,7 @@ readonly class Storage
         $query = $this->pdo->query(
             'SELECT tp.id as id,
                             tc.name AS category,
-                            tf.view AS view,
+                            tf.element AS element,
                             tf.name AS facet_name,
                             tpf.value AS facet_value,
                             tp.name AS name,

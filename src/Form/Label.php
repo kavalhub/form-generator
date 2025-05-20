@@ -12,7 +12,7 @@ class Label extends ElementWithName
 {
     use HtmlFor;
 
-    private string $label;
+    private string $label = '';
 
     public function setLabel(string $label): self
     {

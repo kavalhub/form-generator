@@ -27,7 +27,6 @@ class CompositeElement extends Element implements CompositeElementInterface
 
     public function addElement(ElementInterface $element, mixed $info = null): self
     {
-        $element->setParent($this);
         $this->elementStorage->attach($element, $info ?? $element->getId());
 
         return $this;

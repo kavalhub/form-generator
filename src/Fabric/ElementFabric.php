@@ -5,6 +5,7 @@ namespace Kavalhub\FormGenerator\Fabric;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Fabric\Interface\ElementFabricInterface;
+use Kavalhub\FormGenerator\Form\Group;
 use Kavalhub\FormGenerator\Form\InputCheckbox;
 use Kavalhub\FormGenerator\Form\InputRadio;
 use Kavalhub\FormGenerator\Form\Select;
@@ -81,6 +82,7 @@ class ElementFabric implements ElementFabricInterface
             'InputCheckbox' => InputCheckbox::class,
             'InputRadio' => InputRadio::class,
             'Select' => Select::class,
+            'Group' => Group::class,
         };
     }
 }

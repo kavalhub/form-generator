@@ -6,13 +6,12 @@ namespace Kavalhub\Example\UseCase;
 use Kavalhub\Example\Env\Storage;
 use Generator;
 use Kavalhub\FormGenerator\Fabric\ElementFabric;
-use Kavalhub\FormGenerator\Form\InputCheckbox;
 
 class ProductList
 {
     private array $filter = [];
 
-    public function __construct(private Storage $storage)
+    public function __construct(private readonly Storage $storage)
     {
     }
 
@@ -32,9 +31,12 @@ class ProductList
     {
         $array = [];
         foreach ($this->get() as $product) {
-            $array[$product['facet_name']][ElementFabric::ELEMENT] = $product['view'];
-            $array[$product['facet_name']][ElementFabric::NAME] = $product['view'];
-            $array[$product['facet_name']]['value'][$product['facet_value']] = $product['facet_value'];
+            $array[$product['facet_name']][ElementFabric::ELEMENT] = $product[ElementFabric::ELEMENT];
+            if (empty($array[$product['facet_name']]['value'][$product['facet_value']])) {
+                $array[$product['facet_name']]['value'][$product['facet_value']] = 1;
+                continue;
+            }
+            $array[$product['facet_name']]['value'][$product['facet_value']] += 1;
         }
 
         return $array;

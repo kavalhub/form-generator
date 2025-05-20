@@ -7,8 +7,9 @@ foreach ($this->element->getAll() as $childElement) {
 }
 $html = implode('', $html);
 $error =
-    !empty($this->element->getError()) ? '<div class="invalid-feedback">' . implode('<br>', $this->element->getError())
+    !empty($this->element->getError()) ? '<div class="invalid-feedback px-2 mb2">' . implode('<br>', $this->element->getError())
         . '</div>' : '';
 
 $this->element->addClass(['px-2']);
-return '<div' . $this->element->getHtmlTrait(['HtmlName']) . '>' . $html . '</div>' . $error;
+return '<' . $this->element->getTag() . $this->element->getHtmlTrait(['HtmlName']) . '>' . $html . '</'
+    . $this->element->getTag() . '>' . $error;

@@ -33,7 +33,7 @@ class ElementValidator implements ElementValidatorInterface
                 $this->checkList[] = (new self($this->request))->handle($composite);
             }
         }
-        if ($element instanceof ElementWithValue) {
+        if (method_exists($element, 'setValue' )) {
             $this->request->setValue($element);
             $this->required($element);
         }
@@ -50,7 +50,7 @@ class ElementValidator implements ElementValidatorInterface
         return false;
     }
 
-    private function required(ElementWithValue $element): void
+    private function required(ElementInterface $element): void
     {
         if ($element->isRequired()) {
             $element->addCallbackValidator(function (ElementWithValue $element) {

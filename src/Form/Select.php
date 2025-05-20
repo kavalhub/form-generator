@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\CompositeElement;
+use Kavalhub\FormGenerator\Element\CompositeElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\Error;
 use Kavalhub\FormGenerator\Element\Trait\HtmlMultiple;
 use Kavalhub\FormGenerator\Element\Trait\HtmlName;
 use Kavalhub\FormGenerator\Element\Trait\HtmlValue;
 use Kavalhub\FormGenerator\Element\Trait\Valid;
 
-class Select extends CompositeElement
+class Select extends CompositeElementWithValue
 {
     use Error;
     use HtmlName;
@@ -20,7 +21,7 @@ class Select extends CompositeElement
 
     public function __construct(string $name, array $item = [])
     {
-        parent::__construct();
+        parent::__construct('');
         $this->setName($name);
         $this->setItem($item);
     }

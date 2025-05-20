@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Form;
 
-use Kavalhub\FormGenerator\Element\ElementWithName;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHref;
 use Kavalhub\FormGenerator\Element\Trait\Label;
 
-class Link extends ElementWithName
+class Link extends ElementWithValue
 {
     use HtmlHref;
     use Label;
 
-    public function __construct(string $name, string $href, string $label = null)
+    public function __construct(string $name, string $href = '#', string $label = null)
     {
         parent::__construct($name);
         $this->setHref($href);
@@ -21,6 +21,6 @@ class Link extends ElementWithName
 
     public function getHtml(string $value = ''): string
     {
-        return '<a' . $this->getHtmlTrait(['HtmlName']) . '>' . $this->getLabel() . '</a>';
+        return '<a' . $this->getHtmlTrait() . '>' . $this->getLabel() . '</a>';
     }
 }
