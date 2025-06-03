@@ -22,7 +22,7 @@ class InputRange extends ElementWithValue
         $this->setType('range');
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

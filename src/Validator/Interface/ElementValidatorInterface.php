@@ -6,5 +6,5 @@ use Kavalhub\FormGenerator\Element\Element;
 
 interface ElementValidatorInterface
 {
-    public function exec(Element $element): bool;
+    public function handle(Element $element): bool;
 }

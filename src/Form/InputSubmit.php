@@ -16,7 +16,12 @@ class InputSubmit extends ElementWithValue
         $this->setType('submit');
     }
 
-    public function getHtml(): string
+    public function setValue($value): self
+    {
+        return $this;
+    }
+
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

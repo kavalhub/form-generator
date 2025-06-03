@@ -32,7 +32,7 @@ class Option extends ElementWithValue
         return $this;
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<option' . $this->getHtmlTrait(['HtmlId','HtmlName']) . '>' . $this->getLabel() . '</option>';
     }

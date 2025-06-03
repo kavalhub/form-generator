@@ -5,11 +5,11 @@ namespace Kavalhub\FormGenerator\Element\Trait;
 
 trait Valid
 {
-    protected bool $valid = false;
+    protected ?bool $valid;
 
-    public function isValid(): bool
+    public function isValid(): ?bool
     {
-        return $this->valid;
+        return $this->valid ?? null;
     }
 
     public function setValid(bool $valid = true): self

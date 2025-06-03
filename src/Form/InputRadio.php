@@ -14,16 +14,24 @@ class InputRadio extends ElementWithValue
     use HtmlType;
     use Label;
 
-    public function __construct(string $name, string $value)
+    public function __construct(string $name, string $defaultValue = '')
     {
         parent::__construct($name);
-        $this->setId($this->getId() . '_'. $value);
+        $this->setId($this->getName() . '_' . $defaultValue);
         $this->setType('radio');
-        $this->value = $value;
+        $this->setDefaultValue($defaultValue);
+    }
+
+    public function setDefaultValue(string $defaultValue): ElementWithValue
+    {
+        $this->setId($this->getName() . '_' . $defaultValue);
+
+        return parent::setDefaultValue($defaultValue);
     }
 
     public function setValue(string $value): self
     {
+        $this->setChecked(false);
         if ($value === $this->getValue()) {
             $this->setChecked();
         }
@@ -35,7 +43,7 @@ class InputRadio extends ElementWithValue
         return $this;
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
     }

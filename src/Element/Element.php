@@ -7,6 +7,7 @@ use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\CallbackValidator;
 use Kavalhub\FormGenerator\Element\Trait\Error;
 use Kavalhub\FormGenerator\Element\Trait\HtmlClass;
+use Kavalhub\FormGenerator\Element\Trait\HtmlData;
 use Kavalhub\FormGenerator\Element\Trait\HtmlHidden;
 use Kavalhub\FormGenerator\Element\Trait\HtmlId;
 use Kavalhub\FormGenerator\Element\Trait\HtmlRequired;
@@ -14,6 +15,7 @@ use Kavalhub\FormGenerator\Element\Trait\Observable;
 use Kavalhub\FormGenerator\Element\Trait\Path;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
 use Kavalhub\FormGenerator\Element\Trait\Valid;
+use Kavalhub\FormGenerator\Form\Label;
 use SplObjectStorage;
 
 class Element implements ElementInterface
@@ -21,6 +23,7 @@ class Element implements ElementInterface
     use CallbackValidator;
     use Error;
     use HtmlClass;
+    use HtmlData;
     use HtmlHidden;
     use HtmlId;
     use HtmlRequired;
@@ -32,7 +35,7 @@ class Element implements ElementInterface
     protected ElementInterface $parent;
     protected SplObjectStorage $elementStorage;
 
-    public function __construct()
+    public function __construct(protected string $tag = 'div')
     {
         $this->observer = new SplObjectStorage();
     }
@@ -67,5 +70,15 @@ class Element implements ElementInterface
     public function getAll(): SplObjectStorage
     {
         return new SplObjectStorage();
+    }
+
+    public function getTag(): string
+    {
+        return $this->tag;
+    }
+
+    public function getHtml(string $value = ''): string
+    {
+        return '<' . $this->tag . $this->getHtmlTrait() . '>' . $value . '</' . $this->tag .'>';
     }
 }

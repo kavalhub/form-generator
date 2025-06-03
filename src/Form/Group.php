@@ -11,18 +11,18 @@ class Group extends CompositeElement
 {
     use HtmlName;
 
-    public function __construct(string $name)
+    public function __construct(string $name, string $tag = 'div')
     {
         $this->setName($name);
-        parent::__construct();
+        parent::__construct($tag);
     }
 
-    public function getHtml(): string
+    public function getHtml(string $value = ''): string
     {
         foreach ($this->elementStorage as $element) {
-            $html .= $element->getHtml();
+            $value .= $element->getHtml();
         }
 
-        return '<div' . $this->getHtmlTrait(['HtmlName']) . '>' . $html . '</div>';
+        return '<' . $this->tag . $this->getHtmlTrait(['HtmlName']) . '>' . $value . '</' . $this->tag . '>';
     }
 }

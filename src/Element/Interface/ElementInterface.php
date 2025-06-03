@@ -13,4 +13,6 @@ interface ElementInterface
     public function getAll(): SplObjectStorage;
 
     public function getId(): string;
+
+    public function getHtml(string $value = ''): string;
 }

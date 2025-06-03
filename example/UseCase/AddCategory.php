@@ -12,7 +12,7 @@ readonly class AddCategory
     {
     }
 
-    public function execute(Category $category): bool
+    public function execute(Category $category): Category
     {
         return $this->storage->addCategory($category);
     }
