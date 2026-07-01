@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
+
 trait HtmlValue
 {
     protected string $value;
@@ -33,6 +35,6 @@ trait HtmlValue
 
     protected function getHtmlValue(): string
     {
-        return !empty($this->getValue()) ? ' value="' . htmlspecialchars($this->getValue()) . '"' : '';
+        return !empty($this->getValue()) ? ' value="' . HtmlEscaper::escapeAttribute($this->getValue()) . '"' : '';
     }
 }

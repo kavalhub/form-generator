@@ -13,6 +13,14 @@ class Label extends ElementWithName
     use HtmlFor;
 
     private string $label = '';
+    private bool $allowHtml = false;
+
+    public function setAllowHtml(bool $allowHtml = true): self
+    {
+        $this->allowHtml = $allowHtml;
+
+        return $this;
+    }
 
     public function setLabel(string $label): self
     {
@@ -32,6 +40,8 @@ class Label extends ElementWithName
 
     public function getHtml(string $value = ''): string
     {
-        return '<label' . $this->getHtmlTrait(['HtmlName']) . '>' . $this->label . '</label>';
+        $content = $this->allowHtml ? $this->label : \Kavalhub\FormGenerator\Util\HtmlEscaper::escape($this->label);
+
+        return '<label' . $this->getHtmlTrait(['HtmlName']) . '>' . $content . '</label>';
     }
 }

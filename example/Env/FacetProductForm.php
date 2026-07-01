@@ -80,7 +80,7 @@ class FacetProductForm extends Form
     private function getElementCategory(): ElementInterface
     {
         if ($this->showCategory->isChecked()) {
-            $this->categoryList->addFilter(['tpc.category_id IS NOT NULL']);
+            $this->categoryList->addRawFilter('tpc.category_id IS NOT NULL');
         }
         return ElementFabric::create([
             ElementFabric::ELEMENT => Group::class,
@@ -116,7 +116,7 @@ class FacetProductForm extends Form
     private function addElementFacet(): void
     {
         if (!empty($value = $this->categoryGroup->getValueArray())) {
-            $this->productList->addFilter(['tpc.category_id IN (' . implode(',', $value['cat']) . ')']);
+            $this->productList->addCategoryIdsFilter($value['cat']);
         }
         $this->removeElement($this->submit);
         foreach ($this->productList->getFacet() as $key => $facet) {
@@ -156,9 +156,9 @@ class FacetProductForm extends Form
         $this->addElement($this->submit)
             ->notify();
 
-        $filter = $this->elementObserver->getQuery();
-        if (!empty($filter)) {
-            $this->productList->addFilter(['tp.id IN (' . $filter . ')']);
+        $productIds = $this->elementObserver->getProductIds();
+        if ($productIds !== []) {
+            $this->productList->addProductIdsFilter($productIds);
         }
     }
 

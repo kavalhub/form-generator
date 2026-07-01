@@ -28,12 +28,12 @@ class AddCategoryForm extends Form
         $this->submit = (new InputSubmit('addCategory'))->setDefaultValue('Добавить');
 
         $this->setNovalidate()
-            ->addElement((new Label(''))->setLabel('<h3>Добавление категории</h3>'))
+            ->addElement((new Label(''))->setLabel('<h3>Добавление категории</h3>')->setAllowHtml())
             ->addElement(
                 (new InputText('name'))->setRequired()
                     ->setPlaceholder('Введите название категории')
                     ->addCallbackValidator(function (InputText $name) {
-                        $test = $this->categoryList->addFilter(['tf.name' => $name->getValue()]);
+                        $this->categoryList->addNameFilter($name->getValue());
 
                         return true;
                     })

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
+
 trait HtmlPlaceholder
 {
     protected string $placeholder = '';
@@ -21,6 +23,6 @@ trait HtmlPlaceholder
 
     protected function getHtmlPlaceholder(): string
     {
-        return !empty($this->placeholder) ? ' placeholder="' . $this->placeholder . '"' : '';
+        return !empty($this->placeholder) ? ' placeholder="' . HtmlEscaper::escapeAttribute($this->placeholder) . '"' : '';
     }
 }

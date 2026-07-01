@@ -7,7 +7,7 @@ foreach ($this->element->getAll() as $childElement) {
 }
 $html = implode('', $html);
 $error =
-    !empty($this->element->getError()) ? '<div class="invalid-feedback">' . implode('<br>', $this->element->getError())
+    !empty($this->element->getError()) ? '<div class="invalid-feedback">' . $this->element->getDisplayErrors()
         . '</div>' : '';
 
 $this->element->addClass(['table', 'px-2']);

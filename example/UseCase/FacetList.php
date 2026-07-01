@@ -8,29 +8,31 @@ use Generator;
 
 class FacetList
 {
-    private array $filter = [];
+    private array $where = [];
+    private array $params = [];
 
     public function __construct(private readonly Storage $storage)
     {
     }
 
-    public function addFilter(array $filter): self
+    public function addNameFilter(string $name): self
     {
-        $this->filter = array_merge($this->filter, $filter);
+        $this->where[] = 'tf.name = ?';
+        $this->params[] = $name;
 
         return $this;
     }
 
     public function get(): Generator
     {
-        return $this->storage->getFacetList(!empty($this->filter) ? 'WHERE ' . implode(' AND ', $this->filter) : '');
+        return $this->storage->getFacetList($this->where, $this->params);
     }
 
     public function __toArray(): array
     {
         $array = [];
-        foreach ($this->storage->getFacetList() as $category) {
-            $array[] = $category;
+        foreach ($this->get() as $facet) {
+            $array[] = $facet;
         }
 
         return $array;

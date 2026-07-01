@@ -15,7 +15,6 @@ use Kavalhub\FormGenerator\Element\Trait\Observable;
 use Kavalhub\FormGenerator\Element\Trait\Path;
 use Kavalhub\FormGenerator\Element\Trait\TraitCollector;
 use Kavalhub\FormGenerator\Element\Trait\Valid;
-use Kavalhub\FormGenerator\Form\Label;
 use SplObjectStorage;
 
 class Element implements ElementInterface
@@ -32,7 +31,7 @@ class Element implements ElementInterface
     use TraitCollector;
     use Valid;
 
-    protected ElementInterface $parent;
+    protected ?ElementInterface $parent = null;
     protected SplObjectStorage $elementStorage;
 
     public function __construct(protected string $tag = 'div')
@@ -57,7 +56,7 @@ class Element implements ElementInterface
         return $this;
     }
 
-    public function getParent(): ElementInterface
+    public function getParent(): ?ElementInterface
     {
         return $this->parent;
     }
