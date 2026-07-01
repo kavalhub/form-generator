@@ -19,7 +19,7 @@ final class HtmlEscaperTest extends TestCase
     public function testEscapeListJoinsWithSeparator(): void
     {
         $this->assertSame(
-            'a&lt;br&gt;b',
+            'a&lt;br&gt;<br>b',
             HtmlEscaper::escapeList(['a<br>', 'b'])
         );
     }

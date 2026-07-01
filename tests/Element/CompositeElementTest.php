@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kavalhub\Tests\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\CompositeElement;
+use Kavalhub\FormGenerator\Element\NullElement;
 use Kavalhub\FormGenerator\Form\Group;
 use Kavalhub\FormGenerator\Form\InputCheckbox;
 use Kavalhub\FormGenerator\Form\InputNumber;
@@ -43,7 +44,7 @@ final class CompositeElementTest extends TestCase
         $form = new CompositeElement();
         $found = $form->getByName('missing');
 
-        $this->assertSame('', $found->getTag());
+        $this->assertInstanceOf(NullElement::class, $found);
     }
 
     public function testGetByTypeCollectsNestedElements(): void

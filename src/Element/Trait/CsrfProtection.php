@@ -9,7 +9,7 @@ use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 trait CsrfProtection
 {
     private bool $csrfEnabled = false;
-    private string $csrfFieldName = '_csrf';
+    private string $csrfFieldName = 'csrf';
     private ?InputHidden $csrfField = null;
 
     public function enableCsrf(): self

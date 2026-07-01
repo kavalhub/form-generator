@@ -38,7 +38,7 @@ final class ErrorTraitTest extends TestCase
         $this->element->addError(['Вторая']);
 
         $this->assertSame(['Первая', 'Вторая'], $this->element->getError());
-        $this->assertStringContainsString('&lt;br&gt;', $this->element->getDisplayErrors());
+        $this->assertSame('Первая<br>Вторая', $this->element->getDisplayErrors());
     }
 
     public function testClearErrorsResetsState(): void
