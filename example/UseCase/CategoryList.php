@@ -8,22 +8,31 @@ use Generator;
 
 class CategoryList
 {
-    private array $filter = [];
+    private array $where = [];
+    private array $params = [];
 
     public function __construct(private readonly Storage $storage)
     {
     }
 
-    public function addFilter(array $filter): self
+    public function addNameFilter(string $name): self
     {
-        $this->filter = array_merge($this->filter, $filter);
+        $this->where[] = 'tc.name = ?';
+        $this->params[] = $name;
+
+        return $this;
+    }
+
+    public function addRawFilter(string $condition): self
+    {
+        $this->where[] = $condition;
 
         return $this;
     }
 
     public function get(): Generator
     {
-        return $this->storage->getCategoryList(!empty($this->filter) ? 'WHERE ' . implode(' AND ', $this->filter) : '');
+        return $this->storage->getCategoryList($this->where, $this->params);
     }
 
     public function __toArray(): array

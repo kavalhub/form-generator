@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
+
 trait Error
 {
     protected bool $error = false;
@@ -33,8 +35,21 @@ trait Error
         return $this;
     }
 
+    public function clearErrors(): self
+    {
+        $this->error = false;
+        $this->errorList = [];
+
+        return $this;
+    }
+
+    public function getDisplayErrors(string $separator = '<br>'): string
+    {
+        return HtmlEscaper::escapeList($this->errorList, $separator);
+    }
+
     protected function getHtmlError(): string
     {
-        return !empty($this->errorList) ? implode('<br>', $this->errorList) : '';
+        return $this->getDisplayErrors();
     }
 }

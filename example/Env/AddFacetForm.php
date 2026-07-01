@@ -36,13 +36,13 @@ class AddFacetForm extends Form
             ->addClass(['js-on-input'])
             ->setPlaceholder('Введите название фасета')
             ->addCallbackValidator(function (InputText $name) {
-                $test = $this->facetList->addFilter(['tf.name' => $name->getValue()]);
+                $this->facetList->addNameFilter($name->getValue());
 
                 return true;
             });
 
         $this->setNovalidate()
-            ->addElement((new Label(''))->setLabel(self::LABEL))
+            ->addElement((new Label(''))->setLabel(self::LABEL)->setAllowHtml())
             ->addElement($input)
             ->addElement(new Datalist($input))
             ->addElement($this->submit)

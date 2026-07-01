@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
+
 trait HtmlHref
 {
     protected string $href = '';
@@ -21,6 +23,6 @@ trait HtmlHref
 
     protected function getHtmlHref(): string
     {
-        return !empty($this->href) ? ' href="' . $this->href . '"' : '';
+        return !empty($this->href) ? ' href="' . HtmlEscaper::escapeAttribute($this->href) . '"' : '';
     }
 }

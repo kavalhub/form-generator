@@ -3,28 +3,61 @@ declare(strict_types=1);
 
 namespace Kavalhub\Example\UseCase;
 
-use Kavalhub\Example\Env\Storage;
 use Generator;
+use Kavalhub\Example\Env\Storage;
 use Kavalhub\FormGenerator\Fabric\ElementFabric;
 
 class ProductList
 {
-    private array $filter = [];
+    private array $where = [];
+    private array $params = [];
 
     public function __construct(private readonly Storage $storage)
     {
     }
 
-    public function addFilter(array $filter): self
+    public function addRawFilter(string $condition): self
     {
-        $this->filter = array_merge($this->filter, $filter);
+        $this->where[] = $condition;
+
+        return $this;
+    }
+
+    /**
+     * @param int[] $ids
+     */
+    public function addCategoryIdsFilter(array $ids): self
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if ($ids === []) {
+            return $this;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $this->where[] = 'tpc.category_id IN (' . $placeholders . ')';
+        $this->params = array_merge($this->params, $ids);
+
+        return $this;
+    }
+
+    /**
+     * @param int[] $ids
+     */
+    public function addProductIdsFilter(array $ids): self
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if ($ids === []) {
+            return $this;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $this->where[] = 'tp.id IN (' . $placeholders . ')';
+        $this->params = array_merge($this->params, $ids);
 
         return $this;
     }
 
     public function get(): Generator
     {
-        return $this->storage->getProductList(!empty($this->filter) ? 'WHERE ' . implode(' AND ', $this->filter) : '');
+        return $this->storage->getProductList($this->where, $this->params);
     }
 
     public function getFacet(): array

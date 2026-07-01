@@ -5,10 +5,9 @@ namespace Kavalhub\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\Interface\CompositeElementInterface;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
+use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Form\InputSubmit;
-use Kavalhub\FormGenerator\Form\InputText;
 use SplObjectStorage;
-use SplSubject;
 
 class CompositeElement extends Element implements CompositeElementInterface
 {
@@ -27,6 +26,7 @@ class CompositeElement extends Element implements CompositeElementInterface
 
     public function addElement(ElementInterface $element, mixed $info = null): self
     {
+        $element->setParent($this);
         $this->elementStorage->attach($element, $info ?? $element->getId());
 
         return $this;
@@ -50,15 +50,25 @@ class CompositeElement extends Element implements CompositeElementInterface
             if ($element instanceof InputSubmit) {
                 continue;
             }
-            if ($element instanceof InputText) {
-                $values[$element->getName()] = $element->getValue();
-                continue;
-            }
-            if (method_exists($element, 'isChecked') && $element->isChecked()) {
-                $values[$element->getName()][] = $element->getValue();
-            }
-            if (method_exists($element, 'isSelected') && $element->isSelected()) {
-                $values[$element->getName()][] = $element->getValue();
+            if ($element instanceof ElementWithValue) {
+                if (method_exists($element, 'isChecked')) {
+                    if ($element->isChecked()) {
+                        $values[$element->getName()][] = $element->getValue();
+                    }
+                    continue;
+                }
+                if (method_exists($element, 'isSelected')) {
+                    if ($element->isSelected()) {
+                        $name = $element->getName() !== ''
+                            ? $element->getName()
+                            : $element->getParent()->getName();
+                        $values[$name][] = $element->getValue();
+                    }
+                    continue;
+                }
+                if ($element->getName() !== '') {
+                    $values[$element->getName()] = $element->getValue();
+                }
             }
         }
 
@@ -122,7 +132,10 @@ class CompositeElement extends Element implements CompositeElementInterface
                 continue;
             }
             if ($element->getComposite()) {
-                $element->getByType($type);
+                $childResults = $element->getByType($type);
+                foreach ($childResults->getAll() as $childElement) {
+                    $new->elementStorage->attach($childElement);
+                }
             }
         }
 

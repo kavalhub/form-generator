@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Table;
 
 use Kavalhub\FormGenerator\Element\Element;
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
 
 class Td extends Element
 {
-    public function __construct(private $value)
+    public function __construct(private string $value)
     {
         parent::__construct('td');
     }
 
     public function getHtml(string $value = ''): string
     {
-        return parent::getHtml($this->value);
+        return parent::getHtml(HtmlEscaper::escape($this->value));
     }
 }

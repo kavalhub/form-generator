@@ -1,11 +1,9 @@
 <?php
 declare(strict_types=1);
 
-$errorList = $this->element->getError();
-$errorHtml = !empty($errorList) ? '<div class="invalid-feedback">' . implode(
-        '<br />',
-        $errorList
-    ) . '</div>' : '';
+$errorHtml = !empty($this->element->getError())
+    ? '<div class="invalid-feedback">' . $this->element->getDisplayErrors() . '</div>'
+    : '';
 $this->element->addClass(['form-control']);
 $html = '';
 foreach ($this->element->getAll() as $childElement) {
