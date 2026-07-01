@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Validator;
 
-use Kavalhub\FormGenerator\Element\CompositeElement;
 use Kavalhub\FormGenerator\Form\Form;
 use Kavalhub\FormGenerator\Form\InputSubmit;
 use Kavalhub\FormGenerator\Form\InputText;
@@ -81,9 +80,9 @@ final class ElementValidatorTest extends TestCase
 
     public function testHandleValidatesCompositeChildren(): void
     {
-        $form = new CompositeElement();
+        $form = new Form('test');
         $form->addElement((new InputText('a'))->setRequired());
-        $validator = new ElementValidator(new ArrayRequest(['a' => 'value']));
+        $validator = new ElementValidator(new ArrayRequest(['test_a' => 'value']));
 
         $this->assertTrue($validator->handle($form));
     }

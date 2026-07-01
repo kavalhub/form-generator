@@ -1,3 +1,17 @@
 /vendor/
 /.phpunit.cache/
+/.phpunit.result.cache
 /phpunit.xml
+
+# IDE
+/.idea/
+*.iml
+/.vscode/
+
+# Environment
+.env
+example/.env
+
+# OS
+.DS_Store
+Thumbs.db

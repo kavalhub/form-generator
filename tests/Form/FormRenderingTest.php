@@ -23,7 +23,7 @@ final class FormRenderingTest extends TestCase
         $html = $form->getHtml();
         $this->assertStringStartsWith('<form', $html);
         $this->assertStringEndsWith('</form>', $html);
-        $this->assertStringContainsString('name="user"', $html);
+        $this->assertStringContainsString('name="login_user"', $html);
     }
 
     public function testInputTextEscapesValueAttribute(): void
