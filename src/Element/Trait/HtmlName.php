@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
+
 trait HtmlName
 {
-    protected bool $multiple = false;
+    protected bool $nameAsArray = false;
     protected string $name = '';
 
     public function getName(): string
@@ -20,6 +22,18 @@ trait HtmlName
         return $this;
     }
 
+    public function setNameAsArray(bool $value = true): self
+    {
+        $this->nameAsArray = $value;
+
+        return $this;
+    }
+
+    public function isNameAsArray(): bool
+    {
+        return $this->nameAsArray;
+    }
+
     public function getFormName(): string
     {
         return !empty($this->parent) ? $this->parent->getId() . '_' . $this->name : $this->name;
@@ -27,8 +41,10 @@ trait HtmlName
 
     protected function getHtmlName(): string
     {
-        $multiple = $this->multiple ? '[]' : '';
+        $suffix = $this->nameAsArray ? '[]' : '';
 
-        return !empty($this->getName()) ? ' name="' . $this->getFormName() . $multiple . '"' : '';
+        return !empty($this->getName())
+            ? ' name="' . HtmlEscaper::escapeAttribute($this->getFormName()) . $suffix . '"'
+            : '';
     }
 }

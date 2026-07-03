@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\Tests\FormGenerator\Fabric;
+namespace Kavalhub\Tests\FormGenerator\Factory;
 
-use Kavalhub\FormGenerator\Fabric\ElementFabric;
+use Kavalhub\FormGenerator\Factory\ElementFactory;
 use Kavalhub\FormGenerator\Form\Group;
 use Kavalhub\FormGenerator\Form\InputCheckbox;
 use Kavalhub\FormGenerator\Form\InputRadio;
@@ -11,14 +11,14 @@ use Kavalhub\FormGenerator\Form\InputText;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class ElementFabricTest extends TestCase
+final class ElementFactoryTest extends TestCase
 {
     public function testCreateBuildsElementWithMethods(): void
     {
-        $element = ElementFabric::create([
-            ElementFabric::ELEMENT => InputText::class,
-            ElementFabric::NAME => 'username',
-            ElementFabric::METHOD => [
+        $element = ElementFactory::create([
+            ElementFactory::ELEMENT => InputText::class,
+            ElementFactory::NAME => 'username',
+            ElementFactory::METHOD => [
                 ['setPlaceholder' => 'Enter name'],
                 ['setRequired' => true],
             ],
@@ -32,17 +32,17 @@ final class ElementFabricTest extends TestCase
 
     public function testCreateGroupWithElementBlock(): void
     {
-        $group = ElementFabric::create([
-            ElementFabric::ELEMENT => Group::class,
-            ElementFabric::NAME => 'g',
-            ElementFabric::METHOD => [
+        $group = ElementFactory::create([
+            ElementFactory::ELEMENT => Group::class,
+            ElementFactory::NAME => 'g',
+            ElementFactory::METHOD => [
                 [
-                    ElementFabric::ADD_ELEMENT_BLOCK => [
-                        ElementFabric::ELEMENT => InputCheckbox::class,
-                        ElementFabric::BLOCK => [
+                    ElementFactory::ADD_ELEMENT_BLOCK => [
+                        ElementFactory::ELEMENT => InputCheckbox::class,
+                        ElementFactory::BLOCK => [
                             [
-                                ElementFabric::NAME => 'opt',
-                                ElementFabric::METHOD => [
+                                ElementFactory::NAME => 'opt',
+                                ElementFactory::METHOD => [
                                     ['setDefaultValue' => '1', 'setLabel' => 'One'],
                                 ],
                             ],
@@ -59,24 +59,25 @@ final class ElementFabricTest extends TestCase
     public function testCreateThrowsWhenClassMissing(): void
     {
         $this->expectException(RuntimeException::class);
-        ElementFabric::create([
-            ElementFabric::ELEMENT => 'NonExistentClass',
-            ElementFabric::NAME => 'x',
+        ElementFactory::create([
+            ElementFactory::ELEMENT => 'NonExistentClass',
+            ElementFactory::NAME => 'x',
         ]);
     }
 
     public function testCreateThrowsWhenNameEmpty(): void
     {
         $this->expectException(RuntimeException::class);
-        ElementFabric::create([
-            ElementFabric::ELEMENT => InputText::class,
-            ElementFabric::NAME => '',
+        ElementFactory::create([
+            ElementFactory::ELEMENT => InputText::class,
+            ElementFactory::NAME => '',
         ]);
     }
 
     public function testGetClassNameMapsElementTypes(): void
     {
-        $this->assertSame(InputCheckbox::class, ElementFabric::getClassName('InputCheckbox'));
-        $this->assertSame(InputRadio::class, ElementFabric::getClassName('InputRadio'));
+        $this->assertSame(InputCheckbox::class, ElementFactory::getClassName('InputCheckbox'));
+        $this->assertSame(InputRadio::class, ElementFactory::getClassName('InputRadio'));
+        $this->assertSame(InputText::class, ElementFactory::getClassName('InputText'));
     }
 }

@@ -12,7 +12,7 @@ use Kavalhub\FormGenerator\Form\Label;
 use Kavalhub\FormGenerator\Table\Table;
 use Kavalhub\FormGenerator\Table\Td;
 use Kavalhub\FormGenerator\Table\Tr;
-use Kavalhub\FormGenerator\Validator\ElementValidator;
+use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class AddFacetForm extends Form
 {
@@ -25,7 +25,7 @@ class AddFacetForm extends Form
     private FacetList $facetList;
     private InputSubmit $submit;
 
-    public function __construct(private readonly Storage $storage, private ElementValidator $validator)
+    public function __construct(private readonly Storage $storage, private readonly ElementValidatorInterface $validator)
     {
         parent::__construct(self::NAME);
         $this->facetList = new FacetList($this->storage);
@@ -41,7 +41,8 @@ class AddFacetForm extends Form
                 return true;
             });
 
-        $this->setNovalidate()
+        $this->setMethod('post')
+            ->setNovalidate()
             ->addElement((new Label(''))->setLabel(self::LABEL)->setAllowHtml())
             ->addElement($input)
             ->addElement(new Datalist($input))

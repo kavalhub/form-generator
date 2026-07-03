@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Request;
 
-class ElementRequest extends AbstractElementRequest
+class PostOnlyRequest extends AbstractElementRequest
 {
     public function get(string $name): ?array
     {
-        if (!isset($_REQUEST[$name])) {
+        if (!isset($_POST[$name])) {
             return null;
         }
-        $request = $_REQUEST[$name];
+        $request = $_POST[$name];
         if (!is_array($request)) {
             $request = [$request];
         }

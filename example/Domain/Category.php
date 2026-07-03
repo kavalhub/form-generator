@@ -5,8 +5,11 @@ namespace Kavalhub\Example\Domain;
 
 readonly class Category
 {
-    public function __construct(private string $name, private ?string $uuid = null)
-    {
+    public function __construct(
+        private string $name,
+        private ?int $sort = null,
+        private ?string $uuid = null,
+    ) {
     }
 
     public function getUuid(): ?string
@@ -17,5 +20,10 @@ readonly class Category
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getSort(): ?int
+    {
+        return $this->sort;
     }
 }

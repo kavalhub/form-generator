@@ -5,8 +5,11 @@ namespace Kavalhub\Example\Domain;
 
 readonly class Facet
 {
-    public function __construct(private string $name, private ?string $uuid = null)
-    {
+    public function __construct(
+        private string $name,
+        private ?string $uuid = null,
+        private string $element = 'InputText',
+    ) {
     }
 
     public function getUuid(): ?string
@@ -17,5 +20,10 @@ readonly class Facet
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getElement(): string
+    {
+        return $this->element;
     }
 }

@@ -10,8 +10,16 @@ trait HtmlMultiple
     public function setMultiple(bool $value = true): self
     {
         $this->multiple = $value;
+        if (method_exists($this, 'setNameAsArray')) {
+            $this->setNameAsArray($value);
+        }
 
         return $this;
+    }
+
+    public function isMultiple(): bool
+    {
+        return $this->multiple;
     }
 
     protected function getHtmlMultiple(): string

@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, composer]
+    branches: [main, composer, cursor]
   pull_request:
-    branches: [main, composer]
+    branches: [main, composer, cursor]
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: dom, mbstring, xml, xmlwriter
+          extensions: dom, mbstring, xml, xmlwriter, intl
           coverage: none
 
       - name: Install dependencies

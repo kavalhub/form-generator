@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
+use Kavalhub\FormGenerator\Util\HtmlEscaper;
+
 trait HtmlList
 {
     protected string $list = '';
@@ -21,6 +23,8 @@ trait HtmlList
 
     protected function getHtmlList(): string
     {
-        return !empty($this->list) ? ' list="' . $this->getList() . '"' : '';
+        return !empty($this->list)
+            ? ' list="' . HtmlEscaper::escapeAttribute($this->getList()) . '"'
+            : '';
     }
 }

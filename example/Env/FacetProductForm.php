@@ -6,7 +6,7 @@ namespace Kavalhub\Example\Env;
 use Kavalhub\Example\UseCase\CategoryList;
 use Kavalhub\Example\UseCase\ProductList;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Fabric\ElementFabric;
+use Kavalhub\FormGenerator\Factory\ElementFactory;
 use Kavalhub\FormGenerator\Form\Form;
 use Kavalhub\FormGenerator\Form\Group;
 use Kavalhub\FormGenerator\Form\InputCheckbox;
@@ -14,7 +14,7 @@ use Kavalhub\FormGenerator\Form\InputSubmit;
 use Kavalhub\FormGenerator\Form\Label;
 use Kavalhub\FormGenerator\Form\Nav;
 use Kavalhub\FormGenerator\Observer\ElementObserverInterface;
-use Kavalhub\FormGenerator\Validator\ElementValidator;
+use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class FacetProductForm extends Form
 {
@@ -29,7 +29,7 @@ class FacetProductForm extends Form
     private ProductList $productList;
 
     public function __construct(
-        private readonly Storage $storage, private readonly ElementValidator $validator,
+        private readonly Storage $storage, private readonly ElementValidatorInterface $validator,
         private ElementObserverInterface $elementObserver
     ) {
         parent::__construct(self::NAME);
@@ -82,10 +82,10 @@ class FacetProductForm extends Form
         if ($this->showCategory->isChecked()) {
             $this->categoryList->addRawFilter('tpc.category_id IS NOT NULL');
         }
-        return ElementFabric::create([
-            ElementFabric::ELEMENT => Group::class,
-            ElementFabric::NAME => 'gc',
-            ElementFabric::METHOD => [
+        return ElementFactory::create([
+            ElementFactory::ELEMENT => Group::class,
+            ElementFactory::NAME => 'gc',
+            ElementFactory::METHOD => [
                 [
                     'addClass' => [
                         'border',
@@ -93,12 +93,12 @@ class FacetProductForm extends Form
                     ],
                 ],
                 [
-                    ElementFabric::ADD_ELEMENT_BLOCK => [
-                        ElementFabric::ELEMENT => InputCheckbox::class,
-                        ElementFabric::BLOCK => array_map(static function ($category) {
+                    ElementFactory::ADD_ELEMENT_BLOCK => [
+                        ElementFactory::ELEMENT => InputCheckbox::class,
+                        ElementFactory::BLOCK => array_map(static function ($category) {
                             return [
-                                ElementFabric::NAME => 'cat',
-                                ElementFabric::METHOD => [
+                                ElementFactory::NAME => 'cat',
+                                ElementFactory::METHOD => [
                                     [
                                         'setDefaultValue' => (string)$category['id'],
                                         'setLabel' => $category['name'] . ' - ' . $category['count'],
@@ -120,24 +120,24 @@ class FacetProductForm extends Form
         }
         $this->removeElement($this->submit);
         foreach ($this->productList->getFacet() as $key => $facet) {
-            $group = ElementFabric::create([
-                ElementFabric::ELEMENT => Group::class,
-                ElementFabric::NAME => 'g' . $key,
-                ElementFabric::METHOD => [
+            $group = ElementFactory::create([
+                ElementFactory::ELEMENT => Group::class,
+                ElementFactory::NAME => 'g' . $key,
+                ElementFactory::METHOD => [
                     [
                         'addClass' => [
                             'border',
                             'rounded-2',
                         ],
-                        ElementFabric::ATTACH_OBSERVER => $this->elementObserver,
+                        ElementFactory::ATTACH_OBSERVER => $this->elementObserver,
                     ],
                     [
-                        ElementFabric::ADD_ELEMENT_BLOCK => [
-                            ElementFabric::ELEMENT => ElementFabric::getClassName($facet[ElementFabric::ELEMENT]),
-                            ElementFabric::BLOCK => array_map(static function ($facet, $count) use ($key) {
+                        ElementFactory::ADD_ELEMENT_BLOCK => [
+                            ElementFactory::ELEMENT => ElementFactory::getClassName($facet[ElementFactory::ELEMENT]),
+                            ElementFactory::BLOCK => array_map(static function ($facet, $count) use ($key) {
                                 return [
-                                    ElementFabric::NAME => $key,
-                                    ElementFabric::METHOD => [
+                                    ElementFactory::NAME => $key,
+                                    ElementFactory::METHOD => [
                                         [
                                             'setDefaultValue' => (string)$facet,
                                             'setLabel' => $facet . ' - ' . $count,

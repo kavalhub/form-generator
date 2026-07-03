@@ -1,17 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\Fabric;
+namespace Kavalhub\FormGenerator\Factory;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Fabric\Interface\ElementFabricInterface;
+use Kavalhub\FormGenerator\Factory\Interface\ElementFactoryInterface;
 use Kavalhub\FormGenerator\Form\Group;
 use Kavalhub\FormGenerator\Form\InputCheckbox;
 use Kavalhub\FormGenerator\Form\InputRadio;
+use Kavalhub\FormGenerator\Form\InputText;
 use Kavalhub\FormGenerator\Form\Select;
 use RuntimeException;
 
-class ElementFabric implements ElementFabricInterface
+class ElementFactory implements ElementFactoryInterface
 {
     public const ELEMENT = 'element';
     public const NAME = 'name';
@@ -83,6 +84,8 @@ class ElementFabric implements ElementFabricInterface
             'InputRadio' => InputRadio::class,
             'Select' => Select::class,
             'Group' => Group::class,
+            'InputText' => InputText::class,
+            default => throw new RuntimeException('Unknown element type: ' . $name),
         };
     }
 }
