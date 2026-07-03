@@ -4,58 +4,107 @@ declare(strict_types=1);
 namespace Kavalhub\Example\Env;
 
 use Kavalhub\Example\UseCase\CategoryList;
+use Kavalhub\Example\UseCase\FacetList;
+use Kavalhub\Example\UseCase\ProductList;
 use Kavalhub\FormGenerator\Form\Form;
 use Kavalhub\FormGenerator\Form\InputNumber;
 use Kavalhub\FormGenerator\Form\InputSubmit;
 use Kavalhub\FormGenerator\Form\InputText;
 use Kavalhub\FormGenerator\Form\Label;
+use Kavalhub\FormGenerator\Form\Select;
 use Kavalhub\FormGenerator\Table\Table;
 use Kavalhub\FormGenerator\Table\Td;
 use Kavalhub\FormGenerator\Table\Tr;
-use Kavalhub\FormGenerator\Validator\ElementValidator;
+use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class AddProductForm extends Form
 {
     private const NAME = 'addProduct';
 
     private CategoryList $categoryList;
+    private FacetList $facetList;
+    private ProductList $productList;
     private InputSubmit $submit;
 
     public function __construct(
         private readonly Storage $storage,
-        private readonly ElementValidator $validator
+        private readonly ElementValidatorInterface $validator,
     ) {
         parent::__construct(self::NAME);
         $this->categoryList = new CategoryList($this->storage);
-        $this->submit = (new InputSubmit('addProduct'))->setDefaultValue('Добавить');
+        $this->facetList = new FacetList($this->storage);
+        $this->productList = new ProductList($this->storage);
+        $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить');
 
-        $this->setNovalidate()
-            ->addElement((new Label(''))->setLabel('<h3>Добавление продукта</h3>')->setAllowHtml())
+        $this->setMethod('post')
+            ->setNovalidate()
+            ->addElement((new Label(''))->setLabel('<h3>Добавление товара</h3>')->setAllowHtml())
             ->addElement(
                 (new InputText('name'))->setRequired()
-                    ->setPlaceholder('Введите название продукта')
+                    ->setPlaceholder('Введите название товара')
             )
             ->addElement(
-                (new InputNumber('sort'))->setRequired()
-                    ->setPlaceholder('Введите порядковый номер')
-                    ->setMin(1)
-                    ->setMax(count($this->categoryList->__toArray()) + 1)
+                (new InputNumber('price'))->setRequired()
+                    ->setPlaceholder('Цена')
+                    ->setMin(0)
+                    ->setStep(0.01)
             )
-            ->addElement($this->submit)
+            ->addElement($this->buildCategorySelect());
+
+        foreach ($this->facetList->__toArray() as $facet) {
+            $fieldName = 'facet_' . $facet['id'];
+            $this->addElement(
+                (new Label($fieldName))->setLabel($facet['name'])
+            );
+            $this->addElement(
+                (new InputText($fieldName))->setRequired()
+                    ->setPlaceholder('Значение: ' . $facet['name'])
+            );
+        }
+
+        $this->addElement($this->submit)
             ->addElement($this->getTable());
+    }
+
+    private function buildCategorySelect(): Select
+    {
+        $items = ['' => '— выберите категорию —'];
+        foreach ($this->categoryList->__toArray() as $category) {
+            $items[(string)$category['id']] = $category['name'];
+        }
+
+        return (new Select('category', $items))->setRequired();
     }
 
     private function getTable(): Table
     {
         $table = new Table();
-        foreach ($this->categoryList->__toArray() as $category) {
+        foreach ($this->productList->__toArray() as $id => $product) {
             $table->addElement(
-                (new Tr())->addElement(new Td((string)$category['sort']))
-                    ->addElement(new Td($category['name']))
+                (new Tr())
+                    ->addElement(new Td((string)$id))
+                    ->addElement(new Td((string)$product['name']))
+                    ->addElement(new Td((string)($product['price'] ?? '')))
             );
         }
 
         return $table;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function getFacetValues(): array
+    {
+        $values = [];
+        foreach ($this->facetList->__toArray() as $facet) {
+            $field = $this->getByName('facet_' . $facet['id']);
+            if (method_exists($field, 'getValue')) {
+                $values[(int)$facet['id']] = (string)$field->getValue();
+            }
+        }
+
+        return $values;
     }
 
     public function validate(): bool

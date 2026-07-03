@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Kavalhub\FormGenerator\Fabric\Interface;
+namespace Kavalhub\FormGenerator\Factory\Interface;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 
-interface ElementFabricInterface
+interface ElementFactoryInterface
 {
     public static function create(array $elementData): ElementInterface;
 }

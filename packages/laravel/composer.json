@@ -1,0 +1,29 @@
+{
+    "name": "kavalhub/form-generator-laravel",
+    "description": "Laravel validation bridge for kavalhub/form-generator",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["PHP", "Form", "Laravel", "Validation"],
+    "homepage": "https://github.com/kavalhub/form-generator.git",
+    "require": {
+        "php": "^8.2",
+        "kavalhub/form-generator": "^2.0",
+        "illuminate/validation": "^10.48|^11.0",
+        "illuminate/translation": "^10.48|^11.0",
+        "illuminate/http": "^10.48|^11.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kavalhub\\FormGenerator\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kavalhub\\Tests\\FormGenerator\\Laravel\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+}

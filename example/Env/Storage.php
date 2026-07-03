@@ -135,11 +135,99 @@ readonly class Storage
         if ($cat = $this->getCategoryByName($category->getName())) {
             return $cat;
         }
-        $query = $this->pdo->prepare('INSERT IGNORE INTO temp_category (name) VALUES (:name)');
+        $query = $this->pdo->prepare('INSERT INTO temp_category (name, sort) VALUES (:name, :sort)');
         $query->bindValue(':name', $category->getName());
+        $query->bindValue(':sort', $category->getSort() ?? 0, PDO::PARAM_INT);
         $query->execute();
 
-        return new \Kavalhub\Example\Domain\Category($category->getName(), (string)$this->pdo->lastInsertId());
+        return new \Kavalhub\Example\Domain\Category(
+            $category->getName(),
+            $category->getSort(),
+            (string)$this->pdo->lastInsertId(),
+        );
+    }
+
+    public function addFacet(\Kavalhub\Example\Domain\Facet $facet): \Kavalhub\Example\Domain\Facet
+    {
+        if ($existing = $this->getFacetByName($facet->getName())) {
+            return $existing;
+        }
+        $query = $this->pdo->prepare('INSERT INTO temp_facet (name, element) VALUES (:name, :element)');
+        $query->bindValue(':name', $facet->getName());
+        $query->bindValue(':element', $facet->getElement());
+        $query->execute();
+
+        return new \Kavalhub\Example\Domain\Facet(
+            $facet->getName(),
+            (string)$this->pdo->lastInsertId(),
+            $facet->getElement(),
+        );
+    }
+
+    public function getFacetByName(string $name): ?\Kavalhub\Example\Domain\Facet
+    {
+        $query = $this->pdo->prepare('SELECT * FROM temp_facet WHERE name = :name');
+        $query->bindValue(':name', $name);
+        $query->execute();
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        if (!empty($row)) {
+            return new \Kavalhub\Example\Domain\Facet(
+                (string)$row['name'],
+                (string)$row['id'],
+                (string)$row['element'],
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<int, string> $facetValues facet_id => value
+     */
+    public function addProduct(string $name, int $categoryId, float $price, array $facetValues): int
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $query = $this->pdo->prepare('INSERT INTO temp_product (name) VALUES (:name)');
+            $query->bindValue(':name', $name);
+            $query->execute();
+            $productId = (int)$this->pdo->lastInsertId();
+
+            $query = $this->pdo->prepare(
+                'INSERT INTO temp_product_category (category_id, product_id) VALUES (:category_id, :product_id)'
+            );
+            $query->bindValue(':category_id', $categoryId, PDO::PARAM_INT);
+            $query->bindValue(':product_id', $productId, PDO::PARAM_INT);
+            $query->execute();
+
+            $query = $this->pdo->prepare(
+                'INSERT INTO temp_product_price (product_id, price_id, value) VALUES (:product_id, 1, :value)'
+            );
+            $query->bindValue(':product_id', $productId, PDO::PARAM_INT);
+            $query->bindValue(':value', $price);
+            $query->execute();
+
+            $facetQuery = $this->pdo->prepare(
+                'INSERT INTO temp_product_facet (facet_id, product_id, value) VALUES (:facet_id, :product_id, :value)'
+            );
+            foreach ($facetValues as $facetId => $value) {
+                $value = trim($value);
+                if ($value === '') {
+                    continue;
+                }
+                $facetQuery->bindValue(':facet_id', (int)$facetId, PDO::PARAM_INT);
+                $facetQuery->bindValue(':product_id', $productId, PDO::PARAM_INT);
+                $facetQuery->bindValue(':value', $value);
+                $facetQuery->execute();
+            }
+
+            $this->pdo->commit();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+
+        return $productId;
     }
 
     public function getCategoryByName(string $name): ?\Kavalhub\Example\Domain\Category
@@ -149,7 +237,7 @@ readonly class Storage
         $query->execute();
         $row = $query->fetch(PDO::FETCH_ASSOC);
         if (!empty($row)) {
-            return new \Kavalhub\Example\Domain\Category((string)$row['name'], (string)$row['id']);
+            return new \Kavalhub\Example\Domain\Category((string)$row['name'], (int)$row['sort'], (string)$row['id']);
         }
 
         return null;

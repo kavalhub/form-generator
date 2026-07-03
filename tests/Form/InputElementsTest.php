@@ -53,6 +53,7 @@ final class InputElementsTest extends TestCase
         $select->setValue('blue');
 
         $this->assertSame(['blue'], $select->getSelected());
+        $this->assertSame('blue', $select->getValue());
     }
 
     public function testOptionUsesParentFormName(): void

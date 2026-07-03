@@ -6,6 +6,7 @@ namespace Kavalhub\FormGenerator\Form;
 use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlList;
 use Kavalhub\FormGenerator\Element\Trait\HtmlMaxlength;
+use Kavalhub\FormGenerator\Element\Trait\HtmlMinlength;
 use Kavalhub\FormGenerator\Element\Trait\HtmlPattern;
 use Kavalhub\FormGenerator\Element\Trait\HtmlPlaceholder;
 use Kavalhub\FormGenerator\Element\Trait\HtmlType;
@@ -13,6 +14,7 @@ use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 class InputText extends ElementWithValue
 {
     use HtmlMaxlength;
+    use HtmlMinlength;
     use HtmlPattern;
     use HtmlPlaceholder;
     use HtmlType;

@@ -5,14 +5,12 @@ namespace Kavalhub\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\HtmlChecked;
-use Kavalhub\FormGenerator\Element\Trait\HtmlMultiple;
 use Kavalhub\FormGenerator\Element\Trait\HtmlType;
 use Kavalhub\FormGenerator\Element\Trait\Label;
 
 class InputCheckbox extends ElementWithValue
 {
     use HtmlChecked;
-    use HtmlMultiple;
     use HtmlType;
     use Label;
 
@@ -21,7 +19,7 @@ class InputCheckbox extends ElementWithValue
         parent::__construct($name);
         $this->setId($this->getName() . '_' . $defaultValue);
         $this->setType('checkbox');
-        $this->setMultiple();
+        $this->setNameAsArray();
         $this->setDefaultValue($defaultValue);
     }
 

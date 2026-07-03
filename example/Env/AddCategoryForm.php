@@ -12,22 +12,23 @@ use Kavalhub\FormGenerator\Form\Label;
 use Kavalhub\FormGenerator\Table\Table;
 use Kavalhub\FormGenerator\Table\Td;
 use Kavalhub\FormGenerator\Table\Tr;
-use Kavalhub\FormGenerator\Validator\ElementValidator;
+use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class AddCategoryForm extends Form
 {
-    private const NAME = 'add';
+    private const NAME = 'addCategory';
 
     private CategoryList $categoryList;
     private InputSubmit $submit;
 
-    public function __construct(private readonly Storage $storage, private readonly ElementValidator $validator)
+    public function __construct(private readonly Storage $storage, private readonly ElementValidatorInterface $validator)
     {
         parent::__construct(self::NAME);
         $this->categoryList = (new CategoryList($this->storage));
-        $this->submit = (new InputSubmit('addCategory'))->setDefaultValue('Добавить');
+        $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить');
 
-        $this->setNovalidate()
+        $this->setMethod('post')
+            ->setNovalidate()
             ->addElement((new Label(''))->setLabel('<h3>Добавление категории</h3>')->setAllowHtml())
             ->addElement(
                 (new InputText('name'))->setRequired()

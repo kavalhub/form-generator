@@ -5,6 +5,7 @@
     "keywords": ["PHP", "Form", "Validation form"],
     "homepage": "https://github.com/kavalhub/form-generator.git",
     "license": "MIT",
+    "version": "2.0.1",
     "autoload": {
         "psr-4": {
             "Kavalhub\\FormGenerator\\": "src/",
@@ -13,7 +14,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Kavalhub\\Tests\\FormGenerator\\": "tests/"
+            "Kavalhub\\Tests\\FormGenerator\\": "tests/",
+            "Kavalhub\\FormGenerator\\Laravel\\": "packages/laravel/src/",
+            "Kavalhub\\Tests\\FormGenerator\\Laravel\\": "packages/laravel/tests/"
         }
     },
     "authors": [
@@ -26,9 +29,25 @@
         "php": "^8.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.2"
+        "phpunit/phpunit": "^10.2",
+        "kavalhub/form-generator-laravel": "@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/laravel"
+        }
+    ],
+    "suggest": {
+        "kavalhub/form-generator-laravel": "Адаптеры Request и Validator для Laravel",
+        "kavalhub/form-generator-bootstrap": "Bootstrap-декоратор (пока входит в основной пакет, будет вынесен в 3.x)"
     },
     "scripts": {
         "test": "phpunit"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.31"
+        }
     }
 }

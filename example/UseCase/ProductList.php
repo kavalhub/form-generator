@@ -5,7 +5,7 @@ namespace Kavalhub\Example\UseCase;
 
 use Generator;
 use Kavalhub\Example\Env\Storage;
-use Kavalhub\FormGenerator\Fabric\ElementFabric;
+use Kavalhub\FormGenerator\Factory\ElementFactory;
 
 class ProductList
 {
@@ -64,7 +64,7 @@ class ProductList
     {
         $array = [];
         foreach ($this->get() as $product) {
-            $array[$product['facet_name']][ElementFabric::ELEMENT] = $product[ElementFabric::ELEMENT];
+            $array[$product['facet_name']][ElementFactory::ELEMENT] = $product[ElementFactory::ELEMENT];
             if (empty($array[$product['facet_name']]['value'][$product['facet_value']])) {
                 $array[$product['facet_name']]['value'][$product['facet_value']] = 1;
                 continue;

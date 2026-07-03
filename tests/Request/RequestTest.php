@@ -6,6 +6,7 @@ namespace Kavalhub\Tests\FormGenerator\Request;
 use Kavalhub\FormGenerator\Form\InputText;
 use Kavalhub\FormGenerator\Request\ArrayRequest;
 use Kavalhub\FormGenerator\Request\ElementRequest;
+use Kavalhub\FormGenerator\Request\PostOnlyRequest;
 use PHPUnit\Framework\TestCase;
 
 final class RequestTest extends TestCase
@@ -33,31 +34,47 @@ final class RequestTest extends TestCase
         $this->assertSame('a@b.c', $input->getValue());
     }
 
-    public function testElementRequestUsesInjectedSource(): void
+    public function testElementRequestReadsGetAndPost(): void
     {
-        $request = new ElementRequest(['city' => 'SPB']);
+        $_GET = ['filter' => 'from-get'];
+        $_POST = [];
+        $_REQUEST = ['filter' => 'from-get'];
+        $request = new ElementRequest();
 
-        $this->assertSame(['SPB'], $request->get('city'));
+        $this->assertSame(['from-get'], $request->get('filter'));
+
+        unset($_GET['filter'], $_REQUEST['filter']);
     }
 
-    public function testElementRequestUsesPostByDefault(): void
+    public function testElementRequestReadsPost(): void
     {
         $_POST = ['field' => 'value'];
+        $_REQUEST = ['field' => 'value'];
         $request = new ElementRequest();
 
         $this->assertSame(['value'], $request->get('field'));
 
-        unset($_POST['field']);
+        unset($_POST['field'], $_REQUEST['field']);
     }
 
-    public function testElementRequestIgnoresGetParameters(): void
+    public function testPostOnlyRequestIgnoresGet(): void
     {
         $_GET = ['field' => 'from-get'];
         $_POST = [];
-        $request = new ElementRequest();
+        $request = new PostOnlyRequest();
 
         $this->assertNull($request->get('field'));
 
         unset($_GET['field']);
+    }
+
+    public function testPostOnlyRequestReadsPost(): void
+    {
+        $_POST = ['field' => 'posted'];
+        $request = new PostOnlyRequest();
+
+        $this->assertSame(['posted'], $request->get('field'));
+
+        unset($_POST['field']);
     }
 }
