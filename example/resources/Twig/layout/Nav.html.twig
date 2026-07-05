@@ -1,0 +1,5 @@
+{% set parts = [] %}
+{% for child in element.all %}
+  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+{% endfor %}
+<nav class="fg-twig-nav">{{ parts|join('')|raw }}</nav>

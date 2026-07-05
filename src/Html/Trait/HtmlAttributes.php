@@ -5,6 +5,7 @@ namespace Kavalhub\FormGenerator\Html\Trait;
 
 trait HtmlAttributes
 {
+    use HtmlAjaxBehavior;
     use HtmlClass;
     use HtmlData;
     use HtmlHidden;

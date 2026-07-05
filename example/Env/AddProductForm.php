@@ -41,7 +41,7 @@ class AddProductForm extends Form
         $this->categoryList = new CategoryList($this->storage);
         $this->facetList = new FacetList($this->storage);
         $this->productList = new ProductList($this->storage);
-        $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить');
+        $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить')->setAjax();
 
         $this->table = $this->buildTable();
         $this->table->setId(self::TABLE_ID);
@@ -66,10 +66,12 @@ class AddProductForm extends Form
             $this->addElement(
                 (new Label('l_' . $fieldName))->setLabel($facet['name'])
             );
-            $this->addElement(
-                (new InputText($fieldName))
-                    ->setPlaceholder('Значение: ' . $facet['name'] . ' (необязательно)')
-            );
+            $input = (new InputText($fieldName))
+                ->setPlaceholder('Значение: ' . $facet['name'] . ' (необязательно)');
+            if ($facet['name'] === 'Бренд') {
+                $input->setPath(FormRenderer::FACET_INPUT_TEMPLATE_BASE);
+            }
+            $this->addElement($input);
         }
 
         $this->addElement($this->submit)

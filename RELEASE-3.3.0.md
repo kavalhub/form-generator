@@ -88,3 +88,6 @@ $handler = new ElementAjaxHandler($validator, new NullAjaxRenderStrategy());
 |-------|--------|
 | `kavalhub/form-generator` | 3.3.0 |
 | `kavalhub/form-generator-bootstrap` | 1.0.0 |
+| `kavalhub/form-generator-blade` | 1.0.0 |
+| `kavalhub/form-generator-twig` | 1.0.0 |
+| `kavalhub/form-generator-tailwind` | 1.0.0 |

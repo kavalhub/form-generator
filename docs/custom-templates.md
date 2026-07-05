@@ -1,68 +1,65 @@
 # Кастомные шаблоны декоратора
 
-Декораторы рендерят элементы через PHP-шаблоны. В core остаются [`DecoratorInterface`](../src/Decorator/Interface/DecoratorInterface.php) и [`AbstractDecorator`](../src/Decorator/AbstractDecorator.php); готовая Bootstrap-тема — в пакете `kavalhub/form-generator-bootstrap`.
+Декораторы рендерят элементы через шаблоны. В core: [`DecoratorInterface`](../src/Decorator/Interface/DecoratorInterface.php), [`AbstractDecorator`](../src/Decorator/AbstractDecorator.php).
 
-## Порядок поиска шаблона
+И Bootstrap, и Blade используют файлы `{ClassName}.php`. Каталог `resources/Blade/` или `resources/Bootstrap/` задаёт движок.
 
-Для элемента `InputText` декоратор ищет файлы в таком порядке:
+## Структура каталогов
 
-1. `{element->getPath()}/InputText.php` — точечная подмена на элементе (`$input->setPath('/path')`)
-2. `{customPath}/InputText.php` — каталог из `setTemplate()` (переопределения проекта)
-3. `{decoratorDefaultPath}/InputText.php` — шаблоны пакета темы
-4. То же для родительского класса элемента (например `HtmlElementWithValue.php`)
-5. `$element->render()` — fallback без темы
-
-## Переопределение в приложении
-
-1. Установите bootstrap-пакет:
-
-```bash
-composer require kavalhub/form-generator-bootstrap
+```
+resources/
+  Bootstrap/
+    InputText.php                    # общий шаблон по имени класса
+    CustomElements/
+      InputText.php                  # кастомный конечный шаблон (переиспользуемый)
+    elements/Brand/
+      Group.php                      # фильтр: setPath на Group
+  Blade/
+    ...
 ```
 
-2. Скопируйте нужный шаблон из `vendor/kavalhub/form-generator-bootstrap/templates/`, например `InputText.php`, в каталог проекта `resources/form-templates/`.
+### Индивидуальный шаблон — путь к файлу
 
-3. Подключите каталог:
+Путь может быть любым относительно `setResourceBase()` — не обязан совпадать с именем класса или фасетом.
 
 ```php
-use Kavalhub\FormGenerator\Bootstrap\BootstrapDecorator;
+// Фильтр: обёртка группы фасета «Бренд»
+$group->setPath('elements/Brand/Group.php');
 
-$html = (new BootstrapDecorator($input))
-    ->setTemplate(__DIR__ . '/../resources/form-templates')
-    ->getHtml();
+// Добавление товара: один шаблон на «Бренд», «Цвет» и др.
+$input->setPath('CustomElements/InputText.php');
 ```
 
-В demo-проекте обёртка [`FormRenderer`](../../example/Env/FormRenderer.php) подключает `resources/form-templates/` автоматически, если в каталоге есть `.php`-файлы.
+Относительный путь разрешается через `setResourceBase()` в `resources/{Blade|Bootstrap}/...`.
+
+### Общий шаблон по типу элемента
+
+Файл `resources/Blade/InputText.php` подхватывается для всех `InputText` без своего `setPath()`.
+
+## Demo
+
+- **Фильтр** (`FacetProductForm`): `elements/Brand/Group.php` — красная рамка
+- **Товар** (`AddProductForm`): `CustomElements/InputText.php` — зелёная рамка для фасета «Бренд»
+- **Общий** `InputText.php` в корне `resources/{Blade|Bootstrap|Tailwind}/` — синяя/primary рамка
+- **Twig** — шаблоны `*.html.twig`, стили `form-twig.css`
+- **Tailwind** — utility-классы, CDN Tailwind в demo
+
+### Путь без расширения
+
+`setPath('CustomElements/InputText')` — декоратор подставит `.php` или `.html.twig` автоматически.
+
+### Demo shell
+
+Оболочка demo ([`DemoLayout.php`](../../example/Env/DemoLayout.php)) — навигация, кнопки, переключатели — тоже рендерится через `FormRenderer`. Шаблоны в `resources/{Decorator}/layout/`.
+
+Настройки demo — отдельный [`DemoSettingsForm`](../../example/Env/DemoSettingsForm.php) (`<form id="demoSettings" method="get">`) на одной странице с рабочей формой (`fl`, `add*`). JS перед AJAX сливает `FormData` **всех** `<form>` на странице (`collectPageData()`); сервер читает decorator и transport **только** по `getFormName()` (например `demoSettings_decoratorFieldset_decorator`). **URL state** (History API, nav, reload) — те же ключи, что в FormData; пример: `?demoSettings_decoratorFieldset_decorator=bootstrap&demoSettings_transportFieldset_transport=ajax&fl_gc_cat[]=1&page=filter`.
+
+Смена декоратора — полная навигация с query string из всех форм (`navigateWithPageState` в [`form-demo-ajax.js`](../../form/public/js/form-demo-ajax.js)). Nav-ссылки и редиректы строятся через [`DemoSettingsForm::stateQueryParams()`](../../example/Env/DemoSettingsForm.php).
+
+Фильтр [`FacetProductForm`](../../example/Env/FacetProductForm.php) — `method="get"`, `setAjax()` + `setUrlState('replaceState')`: после AJAX POST на `ajax.php` клиент обновляет URL через History API; при перезагрузке или смене Twig/Bootstrap `index.php` восстанавливает фильтр из `fl_*` в query string (`hasFilterInputInRequest()` → `applyFilter(true)`).
 
 ## Содержимое шаблона
 
-Шаблон — обычный PHP-файл, подключаемый через `include`. В области видимости доступен `$this` — экземпляр декоратора; элемент — в `$this->element` (клон с классами валидации).
+**Bootstrap:** `$this`, `$this->element`, `$this->decorateChild($child)`.
 
-Пример из bootstrap (`InputText.php`):
-
-```php
-<?php
-$this->element->addClass(['form-control']);
-$error = !empty($this->element->getError())
-    ? '<div class="invalid-feedback">' . $this->element->getDisplayErrors() . '</div>'
-    : '';
-return '<div class="form-group">' . $this->element->render() . $error . '</div>';
-```
-
-Для контейнеров (`Form`, `Group`) дочерние элементы рендерятся рекурсивно: `(new $this($childElement))->getHtml()`.
-
-## Своя тема (не Bootstrap)
-
-1. Создайте класс, наследующий `AbstractDecorator`.
-2. Задайте `$path`, `$errorClass`, `$successClass`.
-3. Положите шаблоны в каталог и при необходимости переопределите `getHtml()`.
-4. Для AJAX реализуйте [`AjaxRenderStrategyInterface`](../src/Ajax/Interface/AjaxRenderStrategyInterface.php) или используйте [`NullAjaxRenderStrategy`](../src/Ajax/NullAjaxRenderStrategy.php) без CSS-классов темы.
-
-## Миграция с 3.2
-
-| Было | Стало |
-|------|-------|
-| `Kavalhub\FormGenerator\Decorator\Bootstrap\BootstrapDecorator` | `Kavalhub\FormGenerator\Bootstrap\BootstrapDecorator` + `composer require kavalhub/form-generator-bootstrap` |
-| `new ElementAjaxHandler($validator)` | `new ElementAjaxHandler($validator, $renderStrategy)` |
-
-Старый namespace в 3.3 помечен deprecated и работает при установленном bootstrap-пакете.
+**Blade:** `$element`, `$decorator`, `$decorator->decorateChild($child)`.

@@ -187,6 +187,24 @@ echo $decorator->getHtml();
 
 Кастомные шаблоны для дизайнеров: [docs/custom-templates.md](docs/custom-templates.md).
 
+## Blade-декоратор
+
+Пакет [`kavalhub/form-generator-blade`](packages/blade/) — те же Bootstrap-стили, шаблоны `{ClassName}.php` в каталоге `resources/Blade/`:
+
+```bash
+composer require kavalhub/form-generator-blade
+```
+
+```php
+use Kavalhub\FormGenerator\Blade\BladeDecorator;
+
+echo (new BladeDecorator($form))
+    ->setTemplate(__DIR__ . '/resources/form-templates')
+    ->getHtml();
+```
+
+Для AJAX: `BladeAjaxRenderStrategy`. Demo поддерживает переключатель HTML / Bootstrap / Blade и per-element шаблон для фасета «Бренд».
+
 ## CSRF-защита (opt-in)
 
 ```php
@@ -206,6 +224,23 @@ $form = (new Form('secure'))
 
 Поиск элемента по DOM-id: `ElementDataCollector::findById()` или `$form->getById()`.  
 Короткое имя поля — `getByName()`; для AJAX используйте `getId()` / `getFormName()`.
+
+### Разметка AJAX на форме и полях
+
+На `Form`, `InputText`, `InputSubmit` и других элементах с `HtmlAttributes` доступны:
+
+```php
+$form->setMethod('get')
+    ->setAjax(true)
+    ->setUrlState('replaceState'); // 'pushState' | false — не менять URL
+
+$input = (new InputText('name'))->setAjax();
+```
+
+В HTML: `data-fg-ajax="true"`, опционально `data-fg-url-state="replaceState"`.  
+`setAjax()` на **форме** — перехват `submit` и (в demo) `change` на полях фильтра; на **поле** — field mode (`action` = `getId()`).
+
+В demo URL state и AJAX POST используют **одни и те же ключи**, что `collectPageData()` (`getFormName()` из DOM): например `demoSettings_decoratorFieldset_decorator`, `fl_gc_cat[]`, `page`. Decorator читается только по полному ключу `demoSettings_decoratorFieldset_decorator` (или из session).
 
 ### Endpoint (пример)
 
@@ -242,24 +277,44 @@ if ($validator->checkSubmit($submit) && $validator->handle($form)) {
 ### Клиент (минимальный пример, не входит в пакет)
 
 ```javascript
-form.querySelector('.js-on-input').addEventListener('input', function () {
-    const fd = new FormData();
-    fd.append('action', this.id);
-    fd.append(this.name, this.value);
+function collectPageData() {
+    const body = new FormData();
+    document.querySelectorAll('form').forEach((form) => {
+        new FormData(form).forEach((value, key) => body.append(key, value));
+    });
+    return body;
+}
+
+function applyUrlState(form) {
+    const mode = form?.dataset?.fgUrlState;
+    if (!mode) return;
+    const params = new URLSearchParams();
+    collectPageData().forEach((value, key) => params.append(key, value));
+    const url = `${location.pathname}?${params}`;
+    (mode === 'pushState' ? history.pushState : history.replaceState).call(history, null, '', url);
+}
+
+document.querySelector('[data-fg-ajax="true"]').addEventListener('input', function () {
+    const fd = collectPageData();
+    fd.set('action', this.id);
+    fd.set(this.name, this.value);
     fetch('/ajax.php', { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(r => r.json())
-        .then(data => data.REPLACE.forEach(patch => {
-            const el = document.getElementById(patch.ID);
-            el.classList.remove('is-valid', 'is-invalid');
-            if (patch.CLASS) el.classList.add(patch.CLASS);
-            el.parentElement.querySelectorAll('.invalid-feedback').forEach(n => n.remove());
-            if (patch.ERROR) el.insertAdjacentHTML('afterend', patch.ERROR);
-            if (patch.HTML) document.getElementById(patch.ID).outerHTML = patch.HTML;
-        }));
+        .then(data => {
+            data.REPLACE.forEach(patch => {
+                const el = document.getElementById(patch.ID);
+                el.classList.remove('is-valid', 'is-invalid');
+                if (patch.CLASS) el.classList.add(patch.CLASS);
+                el.parentElement.querySelectorAll('.invalid-feedback').forEach(n => n.remove());
+                if (patch.ERROR) el.insertAdjacentHTML('afterend', patch.ERROR);
+                if (patch.HTML) document.getElementById(patch.ID).outerHTML = patch.HTML;
+            });
+            applyUrlState(this.closest('form[data-fg-url-state]'));
+        });
 });
 ```
 
-Живой пример с переключателем «классика / AJAX» — demo-проект `kavalhub/form-demo`: главная демонстрация на `?page=filter` (фильтр товаров, чекбоксы/радио на лету), также `?page=facet` (добавление фасета).
+Живой пример с переключателем «классика / AJAX», синхронизацией URL (`setUrlState`) и восстановлением фильтра из GET — demo-проект `kavalhub/form-demo`: главная демонстрация на `?page=filter` (фильтр товаров, чекбоксы/радио на лету), также `?page=facet` (добавление фасета).
 
 ## JSON API (3.2+)
 

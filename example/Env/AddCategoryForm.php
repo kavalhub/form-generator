@@ -28,7 +28,7 @@ class AddCategoryForm extends Form
     {
         parent::__construct(self::NAME);
         $this->categoryList = (new CategoryList($this->storage));
-        $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить');
+        $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить')->setAjax();
 
         $this->table = $this->buildTable();
         $this->table->setId(self::TABLE_ID);

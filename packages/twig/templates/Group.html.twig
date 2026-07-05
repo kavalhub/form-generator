@@ -1,0 +1,7 @@
+{% set parts = [] %}
+{% for child in element.all %}
+  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+{% endfor %}
+{% set error = element.error is not empty ? '<div class="fg-twig-error">' ~ element.displayErrors ~ '</div>' : '' %}
+{% do element.addClass(['fg-twig-group']) %}
+<{{ element.tag }}{{ element.htmlTrait(['HtmlName'])|raw }}>{{ parts|join('')|raw }}</{{ element.tag }}>{{ error|raw }}

@@ -7,6 +7,7 @@ use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Trait\Label;
 use Kavalhub\FormGenerator\Html\Trait\HtmlChecked;
 use Kavalhub\FormGenerator\Html\Trait\HtmlType;
+use Kavalhub\FormGenerator\Html\Util\HtmlEscaper;
 
 class InputCheckbox extends HtmlElementWithValue
 {
@@ -44,8 +45,20 @@ class InputCheckbox extends HtmlElementWithValue
         return $this;
     }
 
-    public function render(string $innerHtml = ''): string
+    public function renderControl(): string
     {
         return '<input' . $this->getHtmlTrait() . '>';
+    }
+
+    public function render(string $innerHtml = ''): string
+    {
+        $control = $this->renderControl();
+        $label = $this->getLabel();
+        if ($label === '') {
+            return $control;
+        }
+
+        return '<label for="' . HtmlEscaper::escape($this->getId()) . '">'
+            . $control . ' ' . HtmlEscaper::escape($label) . '</label>';
     }
 }

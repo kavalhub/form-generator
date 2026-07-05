@@ -25,8 +25,9 @@ trait HtmlData
     {
         $html = [];
         foreach ($this->dataList as $key => $data) {
-            $html[] = 'data-' . $key . '="' . $data . '"';
+            $html[] = ' data-' . $key . '="' . $data . '"';
         }
-        return implode(' ', $html);
+
+        return implode('', $html);
     }
 }

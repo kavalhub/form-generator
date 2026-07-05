@@ -1,0 +1,3 @@
+{% do element.addClass(['fg-twig-select']) %}
+{% set error = element.error is not empty ? '<div class="fg-twig-error">' ~ element.displayErrors ~ '</div>' : '' %}
+<div class="fg-twig-field">{{ element.render()|raw }}{{ error|raw }}</div>
