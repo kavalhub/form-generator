@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad51663a7a3d4b7a951fc3f95a2cd641",
+    "content-hash": "1467b0cb73e02ee1eafbdace1bc55d81",
     "packages": [],
     "packages-dev": [
         {
@@ -1813,6 +1813,89 @@
                 "Laravel",
                 "PHP",
                 "Validation"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kavalhub/form-generator-tailwind",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/tailwind",
+                "reference": "7a516bd39f24f53788519bad772754ac00778a7b"
+            },
+            "require": {
+                "kavalhub/form-generator": "^3.3",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kavalhub\\FormGenerator\\Tailwind\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Kavalhub\\Tests\\FormGenerator\\Tailwind\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Tailwind CSS decorator and templates for kavalhub/form-generator",
+            "homepage": "https://github.com/kavalhub/form-generator.git",
+            "keywords": [
+                "Decorator",
+                "Form",
+                "PHP",
+                "Tailwind"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kavalhub/form-generator-twig",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/twig",
+                "reference": "f5365d6f1430f5a418aea6659ef1de5f0601cba5"
+            },
+            "require": {
+                "kavalhub/form-generator": "^3.3",
+                "php": "^8.2",
+                "twig/twig": "^3.14"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kavalhub\\FormGenerator\\Twig\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Kavalhub\\Tests\\FormGenerator\\Twig\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Twig decorator and templates for kavalhub/form-generator",
+            "homepage": "https://github.com/kavalhub/form-generator.git",
+            "keywords": [
+                "Decorator",
+                "Form",
+                "PHP",
+                "Twig"
             ],
             "transport-options": {
                 "relative": true
@@ -5656,6 +5739,86 @@
             "time": "2025-11-17T20:03:58+00:00"
         },
         {
+            "name": "twig/twig",
+            "version": "v3.28.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twigphp/Twig.git",
+                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
+                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1.0",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/polyfill-ctype": "^1.8",
+                "symfony/polyfill-mbstring": "^1.3"
+            },
+            "require-dev": {
+                "php-cs-fixer/shim": "^3.0@stable",
+                "phpstan/phpstan": "^2.0@stable",
+                "psr/container": "^1.0|^2.0",
+                "symfony/phpunit-bridge": "^5.4.9|^6.4|^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Resources/core.php",
+                    "src/Resources/debug.php",
+                    "src/Resources/escaper.php",
+                    "src/Resources/string_loader.php"
+                ],
+                "psr-4": {
+                    "Twig\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Twig Team",
+                    "role": "Contributors"
+                },
+                {
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
+                }
+            ],
+            "description": "Twig, the flexible, fast, and secure template language for PHP",
+            "homepage": "https://twig.symfony.com",
+            "keywords": [
+                "templating"
+            ],
+            "support": {
+                "issues": "https://github.com/twigphp/Twig/issues",
+                "source": "https://github.com/twigphp/Twig/tree/v3.28.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/twig/twig",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-07-03T20:44:34+00:00"
+        },
+        {
             "name": "voku/portable-ascii",
             "version": "2.1.1",
             "source": {
@@ -5735,7 +5898,9 @@
     "stability-flags": {
         "kavalhub/form-generator-laravel": 20,
         "kavalhub/form-generator-bootstrap": 20,
-        "kavalhub/form-generator-blade": 20
+        "kavalhub/form-generator-blade": 20,
+        "kavalhub/form-generator-twig": 20,
+        "kavalhub/form-generator-tailwind": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -5746,5 +5911,5 @@
     "platform-overrides": {
         "php": "8.2.31"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
