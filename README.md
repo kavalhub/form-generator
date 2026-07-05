@@ -22,9 +22,9 @@ composer require kavalhub/form-generator-laravel
 ## Быстрый старт
 
 ```php
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\InputSubmit;
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\Form;
+use Kavalhub\FormGenerator\Html\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputText;
 use Kavalhub\FormGenerator\Request\ElementRequest;
 use Kavalhub\FormGenerator\Validator\ElementValidator;
 use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
@@ -45,7 +45,7 @@ if ($validator->checkSubmit($submit) && $validator->handle($form)) {
     // данные валидны
 }
 
-echo $form->getHtml();
+echo $form->render();
 ```
 
 ## Точки расширения
@@ -75,7 +75,11 @@ flowchart LR
 
 ### `ElementRequest` — по умолчанию (`$_REQUEST`)
 
-Читает **GET + POST + cookies**. Подходит для фильтров и форм, отправляемых GET-запросом (см. `FacetProductForm` в `example/`).
+Читает **GET + POST + cookies**. Подходит для фильтров и форм, отправляемых GET-запросом (см. demo-проект `kavalhub/form-demo`, каталог `src/`).
+
+## Demo-приложение
+
+Примеры использования (`Kavalhub\Example\`) вынесены в отдельный проект и **не входят** в autoload при `composer require kavalhub/form-generator`. В репозитории библиотеки каталог `example/` доступен только через `autoload-dev` для PHPUnit.
 
 ```php
 $request = new ElementRequest();
@@ -136,8 +140,8 @@ $input->addCallbackValidator(function (InputText $el): bool {
 
 ```php
 use Illuminate\Validation\Factory;
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\Form;
+use Kavalhub\FormGenerator\Html\InputText;
 use Kavalhub\FormGenerator\Laravel\LaravelElementValidator;
 use Kavalhub\FormGenerator\Laravel\LaravelRequestAdapter;
 
@@ -190,19 +194,29 @@ $data = ElementDataCollector::collectByFormName($form);
 
 | Класс | Описание |
 |-------|----------|
-| `Form` | Контейнер `<form>` |
-| `Group` | Группа полей с префиксом имени |
-| `InputText`, `InputPassword`, `InputNumber` | Текстовые поля |
-| `InputCheckbox`, `InputRadio` | Переключатели |
-| `Select`, `Option` | Выпадающий список |
-| `Textarea` | Многострочный ввод |
-| `InputHidden`, `InputSubmit`, `Button` | Скрытые и кнопки |
-| `Label`, `Nav`, `Link` | Разметка |
-| `Table`, `Tr`, `Td`, `Th` | Таблицы |
+| `Html\Form` | Контейнер `<form>` |
+| `Html\Group` | Группа полей с префиксом имени |
+| `Html\InputText`, `Html\InputPassword`, `Html\InputNumber` | Текстовые поля |
+| `Html\InputCheckbox`, `Html\InputRadio` | Переключатели |
+| `Html\Select`, `Html\Option` | Выпадающий список |
+| `Html\Textarea` | Многострочный ввод |
+| `Html\InputHidden`, `Html\InputSubmit`, `Html\Button` | Скрытые и кнопки |
+| `Html\Label`, `Html\Nav`, `Html\Link` | Разметка |
+| `Html\Table\Table`, `Html\Table\Tr`, `Html\Table\Td`, `Html\Table\Th` | Таблицы |
+
+## Миграция 2.x → 3.x
+
+- Namespace виджетов: `Kavalhub\FormGenerator\Form\*` → `Kavalhub\FormGenerator\Html\*`
+- Таблицы: `Kavalhub\FormGenerator\Table\*` → `Kavalhub\FormGenerator\Html\Table\*`
+- Рендеринг элементов: `getHtml()` → `render()` (декораторы по-прежнему используют `getHtml()`)
+- `Element` — доменная модель без HTML; HTML-трейты и виджеты в `src/Html/`
+- `HtmlEscaper` перенесён в `Kavalhub\FormGenerator\Html\Util\HtmlEscaper`
+- Базовые HTML-классы: `HtmlElement`, `HtmlElementWithValue`, `HtmlCompositeElement` — содержат `tag`, `ClassList`, `Path`
+- Доменный `Element` не имеет `tag`, `getTag()`, `addClass()` — только дерево, значения и валидация
 
 ## Безопасность
 
-- Значения полей, placeholder, href и сообщения об ошибках экранируются через `HtmlEscaper`.
+- Значения полей, placeholder, href и сообщения об ошибках экранируются через `Html\Util\HtmlEscaper`.
 - `Label::setAllowHtml()` — явное разрешение HTML в подписи.
 - `ElementRequest` использует `$_REQUEST` — удобно для GET-фильтров; для POST-only используйте `PostOnlyRequest`.
 - CSRF включается явно через `Form::enableCsrf()`.

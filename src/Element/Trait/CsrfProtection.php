@@ -3,24 +3,16 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
-use Kavalhub\FormGenerator\Form\InputHidden;
 use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 
 trait CsrfProtection
 {
     private bool $csrfEnabled = false;
-    private string $csrfFieldName = 'csrf';
-    private ?InputHidden $csrfField = null;
+    protected string $csrfFieldName = 'csrf';
 
     public function enableCsrf(): self
     {
-        if ($this->csrfEnabled) {
-            return $this;
-        }
         $this->csrfEnabled = true;
-        $this->csrfField = (new InputHidden($this->csrfFieldName))
-            ->setValue($this->getOrCreateCsrfToken());
-        $this->addElement($this->csrfField);
 
         return $this;
     }
@@ -30,17 +22,22 @@ trait CsrfProtection
         return $this->csrfEnabled;
     }
 
+    public function getCsrfFormName(): string
+    {
+        return $this->getId() . '_' . $this->csrfFieldName;
+    }
+
     public function validateCsrfToken(RequestInterface $request): bool
     {
-        if (!$this->csrfEnabled || $this->csrfField === null) {
+        if (!$this->csrfEnabled) {
             return true;
         }
-        $submitted = $request->get($this->csrfField->getFormName());
+        $submitted = $request->get($this->getCsrfFormName());
 
         return isset($submitted[0]) && hash_equals($this->getOrCreateCsrfToken(), (string)$submitted[0]);
     }
 
-    private function getOrCreateCsrfToken(): string
+    protected function getOrCreateCsrfToken(): string
     {
         $sessionKey = '_form_csrf_' . $this->getFormName();
         if (session_status() === PHP_SESSION_NONE) {

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Element\Trait;
 
-use Kavalhub\FormGenerator\Util\HtmlEscaper;
+use Kavalhub\FormGenerator\Html\Util\HtmlEscaper;
 
 trait Error
 {
@@ -46,10 +46,5 @@ trait Error
     public function getDisplayErrors(string $separator = '<br>'): string
     {
         return HtmlEscaper::escapeList($this->errorList, $separator);
-    }
-
-    protected function getHtmlError(): string
-    {
-        return $this->getDisplayErrors();
     }
 }

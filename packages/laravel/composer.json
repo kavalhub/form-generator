@@ -7,7 +7,7 @@
     "homepage": "https://github.com/kavalhub/form-generator.git",
     "require": {
         "php": "^8.2",
-        "kavalhub/form-generator": "^2.0",
+        "kavalhub/form-generator": "^3.0",
         "illuminate/validation": "^10.48|^11.0",
         "illuminate/translation": "^10.48|^11.0",
         "illuminate/http": "^10.48|^11.0"

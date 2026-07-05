@@ -8,11 +8,14 @@ use SplObjectStorage;
 interface ElementInterface
 {
     public function setParent(ElementInterface $parent): self;
+
+    public function getParent(): ?ElementInterface;
+
     public function getComposite(): ?self;
 
     public function getAll(): SplObjectStorage;
 
     public function getId(): string;
 
-    public function getHtml(string $value = ''): string;
+    public function isRequired(): bool;
 }

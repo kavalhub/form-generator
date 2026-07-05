@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Request;
 
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\InputText;
 use Kavalhub\FormGenerator\Request\ArrayRequest;
 use Kavalhub\FormGenerator\Request\ElementRequest;
 use Kavalhub\FormGenerator\Request\PostOnlyRequest;

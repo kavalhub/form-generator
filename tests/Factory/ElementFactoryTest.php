@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Kavalhub\Tests\FormGenerator\Factory;
 
 use Kavalhub\FormGenerator\Factory\ElementFactory;
-use Kavalhub\FormGenerator\Form\Group;
-use Kavalhub\FormGenerator\Form\InputCheckbox;
-use Kavalhub\FormGenerator\Form\InputRadio;
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\Group;
+use Kavalhub\FormGenerator\Html\InputCheckbox;
+use Kavalhub\FormGenerator\Html\InputRadio;
+use Kavalhub\FormGenerator\Html\InputText;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

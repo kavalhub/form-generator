@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace Kavalhub\Example\Env;
 
 use Kavalhub\Example\UseCase\CategoryList;
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\InputNumber;
-use Kavalhub\FormGenerator\Form\InputSubmit;
-use Kavalhub\FormGenerator\Form\InputText;
-use Kavalhub\FormGenerator\Form\Label;
-use Kavalhub\FormGenerator\Table\Table;
-use Kavalhub\FormGenerator\Table\Td;
-use Kavalhub\FormGenerator\Table\Tr;
+use Kavalhub\FormGenerator\Html\Form;
+use Kavalhub\FormGenerator\Html\InputNumber;
+use Kavalhub\FormGenerator\Html\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Html\Label;
+use Kavalhub\FormGenerator\Html\Table\Table;
+use Kavalhub\FormGenerator\Html\Table\Td;
+use Kavalhub\FormGenerator\Html\Table\Tr;
 use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class AddCategoryForm extends Form
