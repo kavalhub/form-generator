@@ -9,6 +9,7 @@ use Kavalhub\FormGenerator\Html\Interface\HtmlDecoratableInterface;
 abstract class AbstractDecorator implements DecoratorInterface
 {
     protected string $path = __DIR__;
+    protected ?string $customPath = null;
     protected string $errorClass = '';
     protected string $successClass = '';
     protected HtmlDecoratableInterface $element;
@@ -32,13 +33,7 @@ abstract class AbstractDecorator implements DecoratorInterface
         $parentClass = get_parent_class($this->element);
         $parentClassName = $parentClass ? (new \ReflectionClass($parentClass))->getShortName() : '';
 
-        $paths = [
-            $this->element->getPath() . '/' . $className . '.php',
-            $this->path . '/' . $className . '.php',
-            $this->path . '/' . $parentClassName . '.php',
-        ];
-
-        foreach ($paths as $path) {
+        foreach ($this->resolveTemplatePaths($className, $parentClassName) as $path) {
             if (file_exists($path)) {
                 return include $path;
             }
@@ -59,8 +54,32 @@ abstract class AbstractDecorator implements DecoratorInterface
 
     public function setTemplate(string $path): DecoratorInterface
     {
-        $this->path = $path;
+        $this->customPath = rtrim($path, '/');
 
         return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function resolveTemplatePaths(string $className, string $parentClassName): array
+    {
+        $bases = array_values(array_filter([
+            $this->element->getPath() !== '' ? $this->element->getPath() : null,
+            $this->customPath,
+            $this->path,
+        ], static fn (?string $base): bool => $base !== null && $base !== ''));
+
+        $paths = [];
+        foreach ($bases as $base) {
+            $paths[] = $base . '/' . $className . '.php';
+        }
+        if ($parentClassName !== '') {
+            foreach ($bases as $base) {
+                $paths[] = $base . '/' . $parentClassName . '.php';
+            }
+        }
+
+        return $paths;
     }
 }

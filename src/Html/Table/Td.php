@@ -14,8 +14,19 @@ class Td extends HtmlElement
         $this->setTag('td');
     }
 
+    private bool $allowHtml = false;
+
+    public function setAllowHtml(bool $allow = true): self
+    {
+        $this->allowHtml = $allow;
+
+        return $this;
+    }
+
     public function render(string $innerHtml = ''): string
     {
-        return '<td' . $this->getHtmlTrait() . '>' . HtmlEscaper::escape($this->value) . '</td>';
+        $content = $this->allowHtml ? $this->value : HtmlEscaper::escape($this->value);
+
+        return '<td' . $this->getHtmlTrait() . '>' . $content . '</td>';
     }
 }

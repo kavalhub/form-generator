@@ -39,6 +39,29 @@ final class ElementDataCollectorTest extends TestCase
         $this->assertInstanceOf(InputText::class, $found);
     }
 
+    public function testFindByIdLocatesNestedField(): void
+    {
+        $form = new Form('login');
+        $form->addElement(new InputText('user'));
+
+        $found = ElementDataCollector::findById($form, 'login_user');
+
+        $this->assertInstanceOf(InputText::class, $found);
+        $this->assertSame('login_user', $found->getId());
+    }
+
+    public function testFindByIdLocatesCompositeWithSetId(): void
+    {
+        $form = new Form('add');
+        $group = new Group('g');
+        $group->setId('facets');
+        $form->addElement($group);
+
+        $found = ElementDataCollector::findById($form, 'add_facets');
+
+        $this->assertInstanceOf(Group::class, $found);
+    }
+
     public function testApplyErrorsAddsMessagesToElement(): void
     {
         $input = new InputText('email');

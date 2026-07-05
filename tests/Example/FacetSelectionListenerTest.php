@@ -3,15 +3,16 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Example;
 
-use Kavalhub\Example\Env\ObserverFacet;
+use Kavalhub\Example\Env\FacetSelectionListener;
 use Kavalhub\Example\Env\Storage;
+use Kavalhub\FormGenerator\Event\ElementChangedEvent;
 use Kavalhub\FormGenerator\Html\Group;
 use Kavalhub\FormGenerator\Html\InputCheckbox;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
 
-final class ObserverFacetTest extends TestCase
+final class FacetSelectionListenerTest extends TestCase
 {
     public function testGetProductIdsDelegatesToStorage(): void
     {
@@ -22,28 +23,28 @@ final class ObserverFacetTest extends TestCase
         $statement->method('fetchAll')->willReturn(['10', '20']);
 
         $storage = new Storage($pdo);
-        $observer = new ObserverFacet($storage);
+        $listener = new FacetSelectionListener($storage);
 
         $group = new Group('facets');
         $group->addElement((new InputCheckbox('color', 'red'))->setChecked());
-        $observer->update($group);
+        $listener->onElementChanged(new ElementChangedEvent($group));
 
-        $this->assertSame([10, 20], $observer->getProductIds());
-        $this->assertSame(['color' => ['red']], $observer->getFacetList());
-        $this->assertTrue($observer->hasSelection());
+        $this->assertSame([10, 20], $listener->getProductIds());
+        $this->assertSame(['color' => ['red']], $listener->getFacetList());
+        $this->assertTrue($listener->hasSelection());
     }
 
     public function testResetClearsFacetSelection(): void
     {
         $storage = new Storage($this->createMock(PDO::class));
-        $observer = new ObserverFacet($storage);
+        $listener = new FacetSelectionListener($storage);
 
         $group = new Group('facets');
         $group->addElement((new InputCheckbox('color', 'red'))->setChecked());
-        $observer->update($group);
-        $observer->reset();
+        $listener->onElementChanged(new ElementChangedEvent($group));
+        $listener->reset();
 
-        $this->assertFalse($observer->hasSelection());
-        $this->assertSame([], $observer->getFacetList());
+        $this->assertFalse($listener->hasSelection());
+        $this->assertSame([], $listener->getFacetList());
     }
 }

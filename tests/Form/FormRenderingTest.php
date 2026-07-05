@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Form;
 
-use Kavalhub\FormGenerator\Decorator\Bootstrap\BootstrapDecorator;
 use Kavalhub\FormGenerator\Html\Form;
 use Kavalhub\FormGenerator\Html\Group;
 use Kavalhub\FormGenerator\Html\InputText;
@@ -68,6 +67,15 @@ final class FormRenderingTest extends TestCase
         $this->assertStringContainsString('&lt;img onerror=alert(1)&gt;', $html);
     }
 
+    public function testTdAllowHtmlRendersRawContent(): void
+    {
+        $td = (new Td('<span class="badge">ok</span>'))->setAllowHtml();
+        $html = $td->render();
+
+        $this->assertStringContainsString('<span class="badge">ok</span>', $html);
+        $this->assertStringNotContainsString('&lt;span', $html);
+    }
+
     public function testGroupRendersChildrenWithNamePrefix(): void
     {
         $group = new Group('address');
@@ -75,18 +83,6 @@ final class FormRenderingTest extends TestCase
         $html = $group->render();
 
         $this->assertStringContainsString('name="address_street"', $html);
-    }
-
-    public function testBootstrapDecoratorRendersInputWithError(): void
-    {
-        $input = (new InputText('name'))->addError(['<bad>']);
-        $decorator = new BootstrapDecorator($input);
-        $html = $decorator->getHtml();
-
-        $this->assertStringContainsString('form-control', $html);
-        $this->assertStringContainsString('invalid-feedback', $html);
-        $this->assertStringContainsString('&lt;bad&gt;', $html);
-        $this->assertStringNotContainsString('<bad>', $html);
     }
 
     public function testFormEnableCsrfAddsHiddenField(): void

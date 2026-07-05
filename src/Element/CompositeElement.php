@@ -6,6 +6,7 @@ namespace Kavalhub\FormGenerator\Element;
 use Kavalhub\FormGenerator\Element\Interface\CompositeElementInterface;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Interface\SkipsValueCollection;
+use Kavalhub\FormGenerator\Util\ElementDataCollector;
 use SplObjectStorage;
 
 class CompositeElement extends Element implements CompositeElementInterface
@@ -118,6 +119,19 @@ class CompositeElement extends Element implements CompositeElementInterface
         }
 
         return new NullElement('');
+    }
+
+    public function getById(string $id, bool $extract = false): Element
+    {
+        $found = ElementDataCollector::findById($this, $id);
+        if ($found === null) {
+            return new NullElement('');
+        }
+        if ($extract && $found->getParent()?->getComposite() !== null) {
+            $found->getParent()->getComposite()->removeElement($found);
+        }
+
+        return $found;
     }
 
     public function getByType(string $type): self

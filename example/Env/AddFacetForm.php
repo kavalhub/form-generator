@@ -16,6 +16,8 @@ use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class AddFacetForm extends Form
 {
+    public const TABLE_ID = 'facets';
+
     private const NAME = 'add';
     private const BUTTON_NAME = 'addFacet';
     private const BUTTON_VALUE = 'Добавить';
@@ -24,6 +26,7 @@ class AddFacetForm extends Form
 
     private FacetList $facetList;
     private InputSubmit $submit;
+    private Table $table;
 
     public function __construct(private readonly Storage $storage, private readonly ElementValidatorInterface $validator)
     {
@@ -41,22 +44,37 @@ class AddFacetForm extends Form
                 return true;
             });
 
+        $this->table = $this->buildTable();
+        $this->table->setId(self::TABLE_ID);
+
         $this->setMethod('post')
             ->setNovalidate()
             ->addElement((new Label(''))->setLabel(self::LABEL)->setAllowHtml())
             ->addElement($input)
             ->addElement(new Datalist($input))
             ->addElement($this->submit)
-            ->addElement($this->getTable());
+            ->addElement($this->table);
     }
 
-    private function getTable(): Table
+    public function getSubmit(): InputSubmit
     {
-        $table = (new Table());
+        return $this->submit;
+    }
+
+    public function getTable(): Table
+    {
+        return $this->table;
+    }
+
+    private function buildTable(): Table
+    {
+        $table = new Table();
         foreach ($this->facetList->__toArray() as $item) {
             $table->addElement(
-                (new Tr())->addElement(new Td($item['name']))
+                (new Tr())
+                    ->addElement(new Td($item['name']))
                     ->addElement(new Td((string)$item['count']))
+                    ->addElement((new Td(RowDeleteLink::create('facet', (int)$item['id'])))->setAllowHtml())
             );
         }
 

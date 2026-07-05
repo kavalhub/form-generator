@@ -4,6 +4,11 @@ declare(strict_types=1);
 namespace Kavalhub\Example\Env;
 
 use Generator;
+use InvalidArgumentException;
+use Kavalhub\Example\Domain\Category;
+use Kavalhub\Example\Domain\Facet;
+use Kavalhub\Example\Domain\Product;
+use Kavalhub\Example\Domain\Product\ProductFacet;
 use PDO;
 use PDOException;
 
@@ -101,6 +106,10 @@ readonly class Storage
      */
     public function getProductIdsByFacets(array $facetList): array
     {
+        $facetList = array_filter(
+            $facetList,
+            static fn (mixed $values): bool => is_array($values) && $values !== [],
+        );
         if ($facetList === []) {
             return [];
         }
@@ -111,11 +120,17 @@ readonly class Storage
             foreach ($values as $value) {
                 $valuePlaceholders[] = '?';
             }
+            if ($valuePlaceholders === []) {
+                continue;
+            }
             $conditions[] = '(f.name = ? AND pf.value IN (' . implode(',', $valuePlaceholders) . '))';
             $params[] = $name;
             foreach ($values as $value) {
                 $params[] = $value;
             }
+        }
+        if ($conditions === []) {
+            return [];
         }
         $sql = 'SELECT pf.product_id
                     FROM temp_product_facet pf
@@ -123,14 +138,14 @@ readonly class Storage
                     WHERE ' . implode(' OR ', $conditions) . '
                     GROUP BY pf.product_id
                     HAVING COUNT(DISTINCT f.name) = ?';
-        $params[] = count($facetList);
+        $params[] = count($conditions);
         $query = $this->pdo->prepare($sql);
         $query->execute($params);
 
         return array_map('intval', $query->fetchAll(PDO::FETCH_COLUMN));
     }
 
-    public function addCategory(\Kavalhub\Example\Domain\Category $category): \Kavalhub\Example\Domain\Category
+    public function addCategory(Category $category): Category
     {
         if ($cat = $this->getCategoryByName($category->getName())) {
             return $cat;
@@ -140,14 +155,14 @@ readonly class Storage
         $query->bindValue(':sort', $category->getSort() ?? 0, PDO::PARAM_INT);
         $query->execute();
 
-        return new \Kavalhub\Example\Domain\Category(
+        return new Category(
             $category->getName(),
             $category->getSort(),
             (string)$this->pdo->lastInsertId(),
         );
     }
 
-    public function addFacet(\Kavalhub\Example\Domain\Facet $facet): \Kavalhub\Example\Domain\Facet
+    public function addFacet(Facet $facet): Facet
     {
         if ($existing = $this->getFacetByName($facet->getName())) {
             return $existing;
@@ -157,21 +172,34 @@ readonly class Storage
         $query->bindValue(':element', $facet->getElement());
         $query->execute();
 
-        return new \Kavalhub\Example\Domain\Facet(
+        return new Facet(
             $facet->getName(),
             (string)$this->pdo->lastInsertId(),
             $facet->getElement(),
         );
     }
 
-    public function getFacetByName(string $name): ?\Kavalhub\Example\Domain\Facet
+    public function getCategoryById(int $id): ?Category
     {
-        $query = $this->pdo->prepare('SELECT * FROM temp_facet WHERE name = :name');
-        $query->bindValue(':name', $name);
+        $query = $this->pdo->prepare('SELECT * FROM temp_category WHERE id = :id');
+        $query->bindValue(':id', $id, PDO::PARAM_INT);
         $query->execute();
         $row = $query->fetch(PDO::FETCH_ASSOC);
         if (!empty($row)) {
-            return new \Kavalhub\Example\Domain\Facet(
+            return new Category((string)$row['name'], (int)$row['sort'], (string)$row['id']);
+        }
+
+        return null;
+    }
+
+    public function getFacetById(int $id): ?Facet
+    {
+        $query = $this->pdo->prepare('SELECT * FROM temp_facet WHERE id = :id');
+        $query->bindValue(':id', $id, PDO::PARAM_INT);
+        $query->execute();
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        if (!empty($row)) {
+            return new Facet(
                 (string)$row['name'],
                 (string)$row['id'],
                 (string)$row['element'],
@@ -181,15 +209,34 @@ readonly class Storage
         return null;
     }
 
-    /**
-     * @param array<int, string> $facetValues facet_id => value
-     */
-    public function addProduct(string $name, int $categoryId, float $price, array $facetValues): int
+    private function getFacetByName(string $name): ?Facet
     {
+        $query = $this->pdo->prepare('SELECT * FROM temp_facet WHERE name = :name');
+        $query->bindValue(':name', $name);
+        $query->execute();
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        if (!empty($row)) {
+            return new Facet(
+                (string)$row['name'],
+                (string)$row['id'],
+                (string)$row['element'],
+            );
+        }
+
+        return null;
+    }
+
+    public function addProduct(Product $product): Product
+    {
+        $categoryId = (int)$product->getCategory()->getUuid();
+        if ($categoryId <= 0) {
+            throw new InvalidArgumentException('Product category id is required');
+        }
+
         $this->pdo->beginTransaction();
         try {
             $query = $this->pdo->prepare('INSERT INTO temp_product (name) VALUES (:name)');
-            $query->bindValue(':name', $name);
+            $query->bindValue(':name', $product->getName());
             $query->execute();
             $productId = (int)$this->pdo->lastInsertId();
 
@@ -204,18 +251,25 @@ readonly class Storage
                 'INSERT INTO temp_product_price (product_id, price_id, value) VALUES (:product_id, 1, :value)'
             );
             $query->bindValue(':product_id', $productId, PDO::PARAM_INT);
-            $query->bindValue(':value', $price);
+            $query->bindValue(':value', $product->getPrice());
             $query->execute();
 
             $facetQuery = $this->pdo->prepare(
                 'INSERT INTO temp_product_facet (facet_id, product_id, value) VALUES (:facet_id, :product_id, :value)'
             );
-            foreach ($facetValues as $facetId => $value) {
-                $value = trim($value);
+            foreach ($product->getFacets() as $productFacet) {
+                if (!$productFacet instanceof ProductFacet) {
+                    continue;
+                }
+                $value = trim($productFacet->getValue());
                 if ($value === '') {
                     continue;
                 }
-                $facetQuery->bindValue(':facet_id', (int)$facetId, PDO::PARAM_INT);
+                $facet = $this->getFacetByName($productFacet->getName());
+                if ($facet === null) {
+                    continue;
+                }
+                $facetQuery->bindValue(':facet_id', (int)$facet->getUuid(), PDO::PARAM_INT);
                 $facetQuery->bindValue(':product_id', $productId, PDO::PARAM_INT);
                 $facetQuery->bindValue(':value', $value);
                 $facetQuery->execute();
@@ -227,19 +281,111 @@ readonly class Storage
             throw $e;
         }
 
-        return $productId;
+        return new Product(
+            $product->getName(),
+            $product->getPrice(),
+            $product->getCategory(),
+            $product->getFacets(),
+            (string)$productId,
+        );
     }
 
-    public function getCategoryByName(string $name): ?\Kavalhub\Example\Domain\Category
+    private function getCategoryByName(string $name): ?Category
     {
         $query = $this->pdo->prepare('SELECT * FROM temp_category WHERE name = :name');
         $query->bindValue(':name', $name);
         $query->execute();
         $row = $query->fetch(PDO::FETCH_ASSOC);
         if (!empty($row)) {
-            return new \Kavalhub\Example\Domain\Category((string)$row['name'], (int)$row['sort'], (string)$row['id']);
+            return new Category((string)$row['name'], (int)$row['sort'], (string)$row['id']);
         }
 
         return null;
+    }
+
+    public function deleteCategory(int $id): void
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM temp_product_category WHERE category_id = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $stmt = $this->pdo->prepare('DELETE FROM temp_category WHERE id = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function deleteFacet(int $id): void
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM temp_product_facet WHERE facet_id = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $stmt = $this->pdo->prepare('DELETE FROM temp_facet WHERE id = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function deleteProduct(int $id): void
+    {
+        $tables = [
+            'DELETE FROM temp_product_facet WHERE product_id = :id',
+            'DELETE FROM temp_product_price WHERE product_id = :id',
+            'DELETE FROM temp_product_category WHERE product_id = :id',
+            'DELETE FROM temp_product WHERE id = :id',
+        ];
+        foreach ($tables as $sql) {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+        }
+    }
+
+    public function truncateDemoData(): void
+    {
+        $this->pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+        foreach ([
+            'temp_product_facet',
+            'temp_product_price',
+            'temp_product_category',
+            'temp_product',
+            'temp_facet',
+            'temp_category',
+        ] as $table) {
+            $this->pdo->exec('TRUNCATE TABLE ' . $table);
+        }
+        $this->pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+    }
+
+    public function ensurePriceCurrency(): void
+    {
+        $stmt = $this->pdo->prepare('INSERT IGNORE INTO temp_price (id, currency) VALUES (1, :currency)');
+        $stmt->bindValue(':currency', 'RUB');
+        $stmt->execute();
+    }
+
+    /**
+     * @return array<string, int> facet name => id
+     */
+    public function getFacetIdsByName(): array
+    {
+        $map = [];
+        foreach ($this->getFacetList() as $row) {
+            $map[(string)$row['name']] = (int)$row['id'];
+        }
+
+        return $map;
+    }
+
+    /**
+     * @return array<string, int> category name => id
+     */
+    public function getCategoryIdsByName(): array
+    {
+        $map = [];
+        foreach ($this->getCategoryList() as $row) {
+            $map[(string)$row['name']] = (int)$row['id'];
+        }
+
+        return $map;
     }
 }

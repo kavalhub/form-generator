@@ -16,16 +16,22 @@ use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class AddCategoryForm extends Form
 {
+    public const TABLE_ID = 'categories';
+
     private const NAME = 'addCategory';
 
     private CategoryList $categoryList;
     private InputSubmit $submit;
+    private Table $table;
 
     public function __construct(private readonly Storage $storage, private readonly ElementValidatorInterface $validator)
     {
         parent::__construct(self::NAME);
         $this->categoryList = (new CategoryList($this->storage));
         $this->submit = (new InputSubmit('submit'))->setDefaultValue('Добавить');
+
+        $this->table = $this->buildTable();
+        $this->table->setId(self::TABLE_ID);
 
         $this->setMethod('post')
             ->setNovalidate()
@@ -46,16 +52,28 @@ class AddCategoryForm extends Form
                     ->setMax(count($this->categoryList->__toArray()) + 1)
             )
             ->addElement($this->submit)
-            ->addElement($this->getTable());
+            ->addElement($this->table);
     }
 
-    private function getTable(): Table
+    public function getSubmit(): InputSubmit
     {
-        $table = (new Table());
+        return $this->submit;
+    }
+
+    public function getTable(): Table
+    {
+        return $this->table;
+    }
+
+    private function buildTable(): Table
+    {
+        $table = new Table();
         foreach ($this->categoryList->__toArray() as $category) {
             $table->addElement(
-                (new Tr())->addElement(new Td((string)$category['sort']))
+                (new Tr())
+                    ->addElement(new Td((string)$category['sort']))
                     ->addElement(new Td($category['name']))
+                    ->addElement((new Td(RowDeleteLink::create('category', (int)$category['id'])))->setAllowHtml())
             );
         }
 
