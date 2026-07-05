@@ -89,4 +89,30 @@ final class InputElementsTest extends TestCase
 
         $this->assertTrue($radio->isChecked());
     }
+
+    public function testCheckboxRendersLabelInHtmlMode(): void
+    {
+        $checkbox = (new InputCheckbox('cat', '1'))->setLabel('Electronics - 5');
+        $html = $checkbox->render();
+
+        $this->assertStringContainsString('Electronics - 5', $html);
+        $this->assertStringContainsString('<label for="', $html);
+    }
+
+    public function testCheckboxRenderControlReturnsInputOnly(): void
+    {
+        $checkbox = (new InputCheckbox('cat', '1'))->setLabel('Electronics - 5');
+
+        $this->assertStringContainsString('type="checkbox"', $checkbox->renderControl());
+        $this->assertStringNotContainsString('Electronics', $checkbox->renderControl());
+    }
+
+    public function testInputRadioRendersLabelInHtmlMode(): void
+    {
+        $radio = (new InputRadio('size', 'l'))->setLabel('Large');
+        $html = $radio->render();
+
+        $this->assertStringContainsString('Large', $html);
+        $this->assertStringContainsString('<label for="', $html);
+    }
 }

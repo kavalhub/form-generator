@@ -1,0 +1,3 @@
+{% if element.required %}{% do element.addClass(['required']) %}{% endif %}
+{% do element.addClass(['fg-twig-label']) %}
+{{ element.render()|raw }}

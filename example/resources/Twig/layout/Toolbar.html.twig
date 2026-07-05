@@ -1,0 +1,5 @@
+{% set parts = [] %}
+{% for child in element.all %}
+  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+{% endfor %}
+<div class="fg-twig-toolbar mb-4">{{ parts|join('')|raw }}<span id="seed-status" class="demo-seed-status"></span></div>

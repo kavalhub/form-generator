@@ -5,7 +5,7 @@
     "keywords": ["PHP", "Form", "Validation form"],
     "homepage": "https://github.com/kavalhub/form-generator.git",
     "license": "MIT",
-    "version": "3.3.0",
+    "version": "3.3.1",
     "autoload": {
         "psr-4": {
             "Kavalhub\\FormGenerator\\": "src/"
@@ -16,7 +16,11 @@
             "Kavalhub\\Example\\": "example/",
             "Kavalhub\\Tests\\FormGenerator\\": "tests/",
             "Kavalhub\\FormGenerator\\Laravel\\": "packages/laravel/src/",
-            "Kavalhub\\Tests\\FormGenerator\\Laravel\\": "packages/laravel/tests/"
+            "Kavalhub\\Tests\\FormGenerator\\Laravel\\": "packages/laravel/tests/",
+            "Kavalhub\\FormGenerator\\Twig\\": "packages/twig/src/",
+            "Kavalhub\\Tests\\FormGenerator\\Twig\\": "packages/twig/tests/",
+            "Kavalhub\\FormGenerator\\Tailwind\\": "packages/tailwind/src/",
+            "Kavalhub\\Tests\\FormGenerator\\Tailwind\\": "packages/tailwind/tests/"
         }
     },
     "archive": {
@@ -25,6 +29,9 @@
             "tests",
             "packages/laravel/tests",
             "packages/bootstrap/tests",
+            "packages/blade/tests",
+            "packages/twig/tests",
+            "packages/tailwind/tests",
             ".git",
             ".github",
             "phpunit.xml.dist"
@@ -42,7 +49,10 @@
     "require-dev": {
         "phpunit/phpunit": "^10.2",
         "kavalhub/form-generator-laravel": "@dev",
-        "kavalhub/form-generator-bootstrap": "@dev"
+        "kavalhub/form-generator-bootstrap": "@dev",
+        "kavalhub/form-generator-blade": "@dev",
+        "kavalhub/form-generator-twig": "@dev",
+        "kavalhub/form-generator-tailwind": "@dev"
     },
     "repositories": [
         {
@@ -52,11 +62,26 @@
         {
             "type": "path",
             "url": "packages/bootstrap"
+        },
+        {
+            "type": "path",
+            "url": "packages/blade"
+        },
+        {
+            "type": "path",
+            "url": "packages/twig"
+        },
+        {
+            "type": "path",
+            "url": "packages/tailwind"
         }
     ],
     "suggest": {
         "kavalhub/form-generator-laravel": "Адаптеры Request и Validator для Laravel",
-        "kavalhub/form-generator-bootstrap": "Bootstrap-декоратор и шаблоны для рендеринга форм"
+        "kavalhub/form-generator-bootstrap": "Bootstrap-декоратор с PHP-шаблонами",
+        "kavalhub/form-generator-blade": "Blade-декоратор с шаблонами в resources/Blade/",
+        "kavalhub/form-generator-twig": "Twig-декоратор с шаблонами .html.twig",
+        "kavalhub/form-generator-tailwind": "Tailwind CSS декоратор с utility-классами"
     },
     "scripts": {
         "test": "phpunit"

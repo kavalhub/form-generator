@@ -1,0 +1,6 @@
+{% set parts = [] %}
+{% for child in element.all %}
+  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+{% endfor %}
+{% do element.addClass(['fg-twig-nav']) %}
+<{{ element.tag }}{{ element.htmlTrait|raw }}>{{ parts|join('')|raw }}</{{ element.tag }}>

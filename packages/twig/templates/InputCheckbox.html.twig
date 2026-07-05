@@ -1,0 +1,6 @@
+{% do element.addClass(['fg-twig-check-input']) %}
+<label class="fg-twig-switch" for="{{ element.id }}">
+  {{ element.renderControl()|raw }}
+  <span class="fg-twig-switch-track" aria-hidden="true"></span>
+  <span class="fg-twig-switch-label">{{ element.label }}</span>
+</label>

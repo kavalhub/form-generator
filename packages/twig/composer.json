@@ -1,0 +1,28 @@
+{
+    "name": "kavalhub/form-generator-twig",
+    "description": "Twig decorator and templates for kavalhub/form-generator",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["PHP", "Form", "Twig", "Decorator"],
+    "homepage": "https://github.com/kavalhub/form-generator.git",
+    "version": "1.0.0",
+    "require": {
+        "php": "^8.2",
+        "kavalhub/form-generator": "^3.3",
+        "twig/twig": "^3.14"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kavalhub\\FormGenerator\\Twig\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kavalhub\\Tests\\FormGenerator\\Twig\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+}

@@ -21,7 +21,6 @@ class AddFacetForm extends Form
     private const NAME = 'add';
     private const BUTTON_NAME = 'addFacet';
     private const BUTTON_VALUE = 'Добавить';
-    private const BUTTON_CLASS = ['js-button-ajax'];
     private const LABEL = '<h3>Добавление фасета</h3>';
 
     private FacetList $facetList;
@@ -33,10 +32,10 @@ class AddFacetForm extends Form
         parent::__construct(self::NAME);
         $this->facetList = new FacetList($this->storage);
         $this->submit = (new InputSubmit(self::BUTTON_NAME))->setDefaultValue(self::BUTTON_VALUE)
-            ->addClass(self::BUTTON_CLASS);
+            ->setAjax();
 
         $input = (new InputText('name'))->setRequired()
-            ->addClass(['js-on-input'])
+            ->setAjax()
             ->setPlaceholder('Введите название фасета')
             ->addCallbackValidator(function (InputText $name) {
                 $this->facetList->addNameFilter($name->getValue());

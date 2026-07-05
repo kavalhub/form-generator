@@ -10,6 +10,7 @@ abstract class AbstractDecorator implements DecoratorInterface
 {
     protected string $path = __DIR__;
     protected ?string $customPath = null;
+    protected ?string $resourceBase = null;
     protected string $errorClass = '';
     protected string $successClass = '';
     protected HtmlDecoratableInterface $element;
@@ -17,6 +18,7 @@ abstract class AbstractDecorator implements DecoratorInterface
     public function __construct(HtmlDecoratableInterface $element)
     {
         $this->element = clone $element;
+        $this->resolveElementTemplatePath();
     }
 
     public function getHtml(): string
@@ -35,7 +37,7 @@ abstract class AbstractDecorator implements DecoratorInterface
 
         foreach ($this->resolveTemplatePaths($className, $parentClassName) as $path) {
             if (file_exists($path)) {
-                return include $path;
+                return $this->renderTemplateFile($path);
             }
         }
 
@@ -59,27 +61,93 @@ abstract class AbstractDecorator implements DecoratorInterface
         return $this;
     }
 
+    public function setResourceBase(string $path): self
+    {
+        $this->resourceBase = rtrim($path, '/');
+        $this->resolveElementTemplatePath();
+
+        return $this;
+    }
+
+    public function decorateChild(HtmlDecoratableInterface $element): static
+    {
+        $child = new static($element);
+        if ($this->customPath !== null) {
+            $child->customPath = $this->customPath;
+        }
+        if ($this->resourceBase !== null) {
+            $child->resourceBase = $this->resourceBase;
+        }
+        $child->resolveElementTemplatePath();
+
+        return $child;
+    }
+
+    protected function resolveElementTemplatePath(): void
+    {
+        $path = $this->element->getPath();
+        if ($path === '' || $this->resourceBase === null) {
+            return;
+        }
+        if (str_starts_with($path, '/') || file_exists($path)) {
+            return;
+        }
+
+        $this->element->setPath($this->resourceBase . '/' . $path);
+    }
+
     /**
      * @return list<string>
      */
     protected function resolveTemplatePaths(string $className, string $parentClassName): array
     {
-        $bases = array_values(array_filter([
-            $this->element->getPath() !== '' ? $this->element->getPath() : null,
-            $this->customPath,
-            $this->path,
-        ], static fn (?string $base): bool => $base !== null && $base !== ''));
-
+        $extension = $this->getTemplateExtension();
         $paths = [];
-        foreach ($bases as $base) {
-            $paths[] = $base . '/' . $className . '.php';
+        $elementPath = $this->element->getPath();
+
+        if ($elementPath !== '') {
+            if ($this->isExplicitTemplateFile($elementPath)) {
+                $paths[] = $elementPath;
+            } elseif ($this->isExtensionlessTemplatePath($elementPath)) {
+                $paths[] = $elementPath . $extension;
+            } elseif (is_dir($elementPath)) {
+                $paths[] = $elementPath . '/' . $className . $extension;
+                if ($parentClassName !== '') {
+                    $paths[] = $elementPath . '/' . $parentClassName . $extension;
+                }
+            }
         }
-        if ($parentClassName !== '') {
-            foreach ($bases as $base) {
-                $paths[] = $base . '/' . $parentClassName . '.php';
+
+        foreach ([$this->customPath, $this->path] as $base) {
+            if ($base === null || $base === '') {
+                continue;
+            }
+            $paths[] = $base . '/' . $className . $extension;
+            if ($parentClassName !== '') {
+                $paths[] = $base . '/' . $parentClassName . $extension;
             }
         }
 
         return $paths;
+    }
+
+    protected function isExplicitTemplateFile(string $path): bool
+    {
+        return str_ends_with($path, $this->getTemplateExtension());
+    }
+
+    protected function isExtensionlessTemplatePath(string $path): bool
+    {
+        return !str_contains(basename($path), '.');
+    }
+
+    protected function getTemplateExtension(): string
+    {
+        return '.php';
+    }
+
+    protected function renderTemplateFile(string $path): string
+    {
+        return include $path;
     }
 }

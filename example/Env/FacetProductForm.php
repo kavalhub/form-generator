@@ -58,7 +58,10 @@ class FacetProductForm extends Form
 
         $this->categoryGroup = $this->getElementCategory();
 
-        $this->setNovalidate()
+        $this->setMethod('get')
+            ->setNovalidate()
+            ->setAjax(true)
+            ->setUrlState('replaceState')
             ->addElement(
                 (new Nav('cn'))->addElement(
                     (new Label('cat'))->setLabel('- Категория -')
@@ -85,6 +88,28 @@ class FacetProductForm extends Form
     public function validate(): bool
     {
         return $this->applyFilter(false);
+    }
+
+    public function hasFilterInputInRequest(): bool
+    {
+        $prefix = self::NAME . '_';
+        foreach (array_keys($_REQUEST) as $key) {
+            if (!str_starts_with($key, $prefix)) {
+                continue;
+            }
+            $rest = substr($key, strlen($prefix));
+            if ($rest === 'go' || str_starts_with($rest, 'go[')) {
+                continue;
+            }
+            if (str_starts_with($rest, 'gc') || str_starts_with($rest, 'cn_')) {
+                return true;
+            }
+            if (str_starts_with($rest, 'g')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function applyFilter(bool $force = false): bool
@@ -234,6 +259,9 @@ class FacetProductForm extends Form
                     ],
                 ],
             ]);
+            if ($key === 'Бренд') {
+                $group->setPath(FormRenderer::BRAND_GROUP_TEMPLATE_BASE);
+            }
             $this->addElement((new Label($key))->setLabel('- ' . $key . ' -'));
             $this->addElement($group);
         }
