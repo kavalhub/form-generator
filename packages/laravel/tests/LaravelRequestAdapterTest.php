@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Kavalhub\Tests\FormGenerator\Laravel;
 
 use Illuminate\Http\Request;
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\InputText;
 use Kavalhub\FormGenerator\Laravel\LaravelRequestAdapter;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ final class LaravelRequestAdapterTest extends TestCase
         $request = Request::create('/', 'POST', ['login_user' => 'admin']);
         $adapter = new LaravelRequestAdapter($request);
 
-        $form = new \Kavalhub\FormGenerator\Form\Form('login');
+        $form = new \Kavalhub\FormGenerator\Html\Form('login');
         $input = new InputText('user');
         $form->addElement($input);
         $adapter->setValue($input);

@@ -51,7 +51,7 @@ final class ExampleFormsTest extends TestCase
         $storage = $this->createMemoryStorage();
         $storage->addCategory(new Category('Электроника', 1));
         $form = new AddProductForm($storage, new ElementValidator(new ArrayRequest([])));
-        $html = $form->getHtml();
+        $html = $form->render();
 
         $this->assertStringContainsString('name="addProduct_name"', $html);
         $this->assertStringContainsString('name="addProduct_category"', $html);

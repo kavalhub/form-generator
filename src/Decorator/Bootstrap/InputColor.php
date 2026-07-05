@@ -6,4 +6,4 @@ $this->element->addClass([
     'form-control-color'
 ]);
 
-return '<div class="form-group">' . $this->element->getHtml() . '</div>';
+return '<div class="form-group">' . $this->element->render() . '</div>';

@@ -5,11 +5,11 @@ namespace Kavalhub\FormGenerator\Factory;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Factory\Interface\ElementFactoryInterface;
-use Kavalhub\FormGenerator\Form\Group;
-use Kavalhub\FormGenerator\Form\InputCheckbox;
-use Kavalhub\FormGenerator\Form\InputRadio;
-use Kavalhub\FormGenerator\Form\InputText;
-use Kavalhub\FormGenerator\Form\Select;
+use Kavalhub\FormGenerator\Html\Group;
+use Kavalhub\FormGenerator\Html\InputCheckbox;
+use Kavalhub\FormGenerator\Html\InputRadio;
+use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Html\Select;
 use RuntimeException;
 
 class ElementFactory implements ElementFactoryInterface

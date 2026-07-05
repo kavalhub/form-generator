@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Util;
 
-use Kavalhub\FormGenerator\Util\HtmlEscaper;
+use Kavalhub\FormGenerator\Html\Util\HtmlEscaper;
 use PHPUnit\Framework\TestCase;
 
 final class HtmlEscaperTest extends TestCase

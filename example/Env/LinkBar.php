@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\Example\Env;
 
-use Kavalhub\FormGenerator\Form\Link;
-use Kavalhub\FormGenerator\Form\Nav;
+use Kavalhub\FormGenerator\Html\Link;
+use Kavalhub\FormGenerator\Html\Nav;
 
 class LinkBar extends Nav
 {

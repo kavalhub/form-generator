@@ -5,17 +5,16 @@ namespace Kavalhub\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\Interface\CompositeElementInterface;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Element\ElementWithValue;
-use Kavalhub\FormGenerator\Form\InputSubmit;
+use Kavalhub\FormGenerator\Element\Interface\SkipsValueCollection;
 use SplObjectStorage;
 
 class CompositeElement extends Element implements CompositeElementInterface
 {
     protected SplObjectStorage $elementStorage;
 
-    public function __construct(string $tag = '')
+    public function __construct()
     {
-        parent::__construct($tag);
+        parent::__construct();
         $this->elementStorage = new SplObjectStorage();
     }
 
@@ -47,7 +46,7 @@ class CompositeElement extends Element implements CompositeElementInterface
             if ($element->getComposite()) {
                 $values += $element->getValueArray();
             }
-            if ($element instanceof InputSubmit) {
+            if ($element instanceof SkipsValueCollection) {
                 continue;
             }
             if ($element instanceof ElementWithValue) {
@@ -75,7 +74,6 @@ class CompositeElement extends Element implements CompositeElementInterface
         return $values;
     }
 
-    // TODO переписать с массива ValueObject
     public function addElementBlock(string $elementName, array $elementData = []): self
     {
         if (!class_exists($elementName)) {
@@ -157,14 +155,5 @@ class CompositeElement extends Element implements CompositeElementInterface
     public function getAll(): SplObjectStorage
     {
         return $this->elementStorage;
-    }
-
-    public function getHtml(string $value = ''): string
-    {
-        foreach ($this->elementStorage as $element) {
-            $value .= $element->getHtml();
-        }
-
-        return parent::getHtml($value);
     }
 }

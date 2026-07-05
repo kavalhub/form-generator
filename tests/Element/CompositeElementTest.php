@@ -5,12 +5,12 @@ namespace Kavalhub\Tests\FormGenerator\Element;
 
 use Kavalhub\FormGenerator\Element\CompositeElement;
 use Kavalhub\FormGenerator\Element\NullElement;
-use Kavalhub\FormGenerator\Form\Group;
-use Kavalhub\FormGenerator\Form\InputCheckbox;
-use Kavalhub\FormGenerator\Form\InputNumber;
-use Kavalhub\FormGenerator\Form\InputSubmit;
-use Kavalhub\FormGenerator\Form\InputText;
-use Kavalhub\FormGenerator\Form\Label;
+use Kavalhub\FormGenerator\Html\Group;
+use Kavalhub\FormGenerator\Html\InputCheckbox;
+use Kavalhub\FormGenerator\Html\InputNumber;
+use Kavalhub\FormGenerator\Html\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Html\Label;
 use PHPUnit\Framework\TestCase;
 
 final class CompositeElementTest extends TestCase

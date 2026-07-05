@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Validator;
 
 use Kavalhub\FormGenerator\Element\ElementWithValue;
+use Kavalhub\FormGenerator\Element\Interface\CsrfProtectable;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputSubmit;
 use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
@@ -32,7 +32,7 @@ class ElementValidator implements ElementValidatorInterface
             $element->clearErrors();
         }
 
-        if ($element instanceof Form && $element->isCsrfEnabled() && !$element->validateCsrfToken($this->request)) {
+        if ($element instanceof CsrfProtectable && $element->isCsrfEnabled() && !$element->validateCsrfToken($this->request)) {
             $element->addError(['Неверный CSRF-токен']);
             $this->valid = false;
 

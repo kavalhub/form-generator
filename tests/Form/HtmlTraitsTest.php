@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Form;
 
-use Kavalhub\FormGenerator\Form\Button;
-use Kavalhub\FormGenerator\Form\InputCheckbox;
-use Kavalhub\FormGenerator\Form\InputFile;
-use Kavalhub\FormGenerator\Form\InputText;
-use Kavalhub\FormGenerator\Form\Select;
-use Kavalhub\FormGenerator\Form\Textarea;
+use Kavalhub\FormGenerator\Html\Button;
+use Kavalhub\FormGenerator\Html\InputCheckbox;
+use Kavalhub\FormGenerator\Html\InputFile;
+use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Html\Select;
+use Kavalhub\FormGenerator\Html\Textarea;
 use PHPUnit\Framework\TestCase;
 
 final class HtmlTraitsTest extends TestCase
@@ -20,7 +20,7 @@ final class HtmlTraitsTest extends TestCase
             ->setAutocomplete('email')
             ->setAutofocus();
 
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString(' readonly', $html);
         $this->assertStringContainsString('autocomplete="email"', $html);
@@ -30,7 +30,7 @@ final class HtmlTraitsTest extends TestCase
     public function testInputTextRendersMinlength(): void
     {
         $input = (new InputText('code'))->setMinlength(3);
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('minlength="3"', $html);
     }
@@ -38,7 +38,7 @@ final class HtmlTraitsTest extends TestCase
     public function testTextareaRendersRowsAndCols(): void
     {
         $textarea = (new Textarea('desc'))->setRows(5)->setCols(40);
-        $html = $textarea->getHtml();
+        $html = $textarea->render();
 
         $this->assertStringContainsString('rows="5"', $html);
         $this->assertStringContainsString('cols="40"', $html);
@@ -50,7 +50,7 @@ final class HtmlTraitsTest extends TestCase
             ->setAccept('image/*')
             ->setMultiple();
 
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('accept="image/*"', $html);
         $this->assertStringContainsString(' multiple', $html);
@@ -63,7 +63,7 @@ final class HtmlTraitsTest extends TestCase
             ->setDisabled()
             ->setSize(4);
 
-        $html = $select->getHtml();
+        $html = $select->render();
 
         $this->assertStringContainsString(' disabled', $html);
         $this->assertStringContainsString('size="4"', $html);
@@ -72,7 +72,7 @@ final class HtmlTraitsTest extends TestCase
     public function testCheckboxUsesArrayNameWithoutMultipleAttribute(): void
     {
         $checkbox = new InputCheckbox('agree', 'yes');
-        $html = $checkbox->getHtml();
+        $html = $checkbox->render();
 
         $this->assertStringContainsString('name="agree[]"', $html);
         $this->assertStringNotContainsString(' multiple', $html);
@@ -81,7 +81,7 @@ final class HtmlTraitsTest extends TestCase
     public function testButtonRendersType(): void
     {
         $button = (new Button('send'))->setLabel('Go')->setType('button');
-        $html = $button->getHtml();
+        $html = $button->render();
 
         $this->assertStringContainsString('type="button"', $html);
         $this->assertStringContainsString('>Go</button>', $html);
@@ -90,7 +90,7 @@ final class HtmlTraitsTest extends TestCase
     public function testListAttributeIsEscaped(): void
     {
         $input = (new InputText('q'))->setList('"><x>');
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('list="&quot;&gt;&lt;x&gt;"', $html);
     }

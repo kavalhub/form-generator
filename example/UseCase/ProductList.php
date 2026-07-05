@@ -81,6 +81,7 @@ class ProductList
         foreach ($this->get() as $product) {
             $array[$product['id']]['facet'][$product['facet_name']][] = $product['facet_value'];
             $array[$product['id']]['name'] = $product['name'];
+            $array[$product['id']]['category'] = $product['category'] ?? '';
             $array[$product['id']]['price'] = $product['price'];
             $array[$product['id']]['currency'] = $product['currency'];
         }

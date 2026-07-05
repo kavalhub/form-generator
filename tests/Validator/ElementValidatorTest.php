@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Validator;
 
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\InputSubmit;
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\Form;
+use Kavalhub\FormGenerator\Html\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputText;
 use Kavalhub\FormGenerator\Request\ArrayRequest;
 use Kavalhub\FormGenerator\Validator\ElementValidator;
 use PHPUnit\Framework\TestCase;

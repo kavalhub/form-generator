@@ -5,7 +5,7 @@ namespace Kavalhub\FormGenerator\Util;
 
 use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Form\InputSubmit;
+use Kavalhub\FormGenerator\Element\Interface\SkipsValueCollection;
 
 final class ElementDataCollector
 {
@@ -66,7 +66,7 @@ final class ElementDataCollector
             }
         }
 
-        if ($element instanceof InputSubmit) {
+        if ($element instanceof SkipsValueCollection) {
             return;
         }
 

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Util;
 
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\Group;
-use Kavalhub\FormGenerator\Form\InputText;
+use Kavalhub\FormGenerator\Html\Form;
+use Kavalhub\FormGenerator\Html\Group;
+use Kavalhub\FormGenerator\Html\InputText;
 use Kavalhub\FormGenerator\Util\ElementDataCollector;
 use PHPUnit\Framework\TestCase;
 

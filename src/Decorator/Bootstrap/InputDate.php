@@ -5,4 +5,4 @@ $this->element->addClass([
     'form-control',
 ]);
 
-return '<div class="form-group">' . $this->element->getHtml() . '</div>';
+return '<div class="form-group">' . $this->element->render() . '</div>';

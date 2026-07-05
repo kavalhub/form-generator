@@ -5,4 +5,4 @@ if ($this->element->isRequired()) {
     $this->element->addClass(['required']);
 }
 
-return $this->element->getHtml();
+return $this->element->render();

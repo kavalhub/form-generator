@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Kavalhub\FormGenerator\Validator\Interface;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Form\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputSubmit;
 
 interface ElementValidatorInterface
 {

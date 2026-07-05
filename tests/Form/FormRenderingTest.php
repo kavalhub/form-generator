@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace Kavalhub\Tests\FormGenerator\Form;
 
 use Kavalhub\FormGenerator\Decorator\Bootstrap\BootstrapDecorator;
-use Kavalhub\FormGenerator\Form\Form;
-use Kavalhub\FormGenerator\Form\Group;
-use Kavalhub\FormGenerator\Form\InputText;
-use Kavalhub\FormGenerator\Form\Label;
-use Kavalhub\FormGenerator\Form\Textarea;
-use Kavalhub\FormGenerator\Table\Td;
-use Kavalhub\FormGenerator\Table\Tr;
+use Kavalhub\FormGenerator\Html\Form;
+use Kavalhub\FormGenerator\Html\Group;
+use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Html\Label;
+use Kavalhub\FormGenerator\Html\Textarea;
+use Kavalhub\FormGenerator\Html\Table\Td;
+use Kavalhub\FormGenerator\Html\Table\Tr;
 use PHPUnit\Framework\TestCase;
 
 final class FormRenderingTest extends TestCase
@@ -20,7 +20,7 @@ final class FormRenderingTest extends TestCase
         $form = new Form('login');
         $form->addElement(new InputText('user'));
 
-        $html = $form->getHtml();
+        $html = $form->render();
         $this->assertStringStartsWith('<form', $html);
         $this->assertStringEndsWith('</form>', $html);
         $this->assertStringContainsString('name="login_user"', $html);
@@ -29,7 +29,7 @@ final class FormRenderingTest extends TestCase
     public function testInputTextEscapesValueAttribute(): void
     {
         $input = (new InputText('q'))->setValue('"><script>');
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('value="&quot;&gt;&lt;script&gt;"', $html);
         $this->assertStringNotContainsString('<script>', $html);
@@ -38,7 +38,7 @@ final class FormRenderingTest extends TestCase
     public function testTextareaEscapesBodyContent(): void
     {
         $textarea = (new Textarea('desc'))->setValue('<b>bold</b>');
-        $html = $textarea->getHtml();
+        $html = $textarea->render();
 
         $this->assertStringContainsString('&lt;b&gt;bold&lt;/b&gt;', $html);
         $this->assertStringNotContainsString('<b>bold</b>', $html);
@@ -47,7 +47,7 @@ final class FormRenderingTest extends TestCase
     public function testLabelEscapesByDefault(): void
     {
         $label = (new Label('l'))->setLabel('<script>x</script>');
-        $html = $label->getHtml();
+        $html = $label->render();
 
         $this->assertStringContainsString('&lt;script&gt;x&lt;/script&gt;', $html);
     }
@@ -55,7 +55,7 @@ final class FormRenderingTest extends TestCase
     public function testLabelAllowHtmlWhenEnabled(): void
     {
         $label = (new Label('l'))->setLabel('<h3>Title</h3>')->setAllowHtml();
-        $html = $label->getHtml();
+        $html = $label->render();
 
         $this->assertStringContainsString('<h3>Title</h3>', $html);
     }
@@ -63,7 +63,7 @@ final class FormRenderingTest extends TestCase
     public function testTdEscapesCellContent(): void
     {
         $td = new Td('<img onerror=alert(1)>');
-        $html = $td->getHtml();
+        $html = $td->render();
 
         $this->assertStringContainsString('&lt;img onerror=alert(1)&gt;', $html);
     }
@@ -72,7 +72,7 @@ final class FormRenderingTest extends TestCase
     {
         $group = new Group('address');
         $group->addElement(new InputText('street'));
-        $html = $group->getHtml();
+        $html = $group->render();
 
         $this->assertStringContainsString('name="address_street"', $html);
     }
@@ -99,7 +99,7 @@ final class FormRenderingTest extends TestCase
         session_start();
 
         $form = (new Form('f'))->enableCsrf();
-        $html = $form->getHtml();
+        $html = $form->render();
 
         $this->assertStringContainsString('type="hidden"', $html);
         $this->assertStringContainsString('name="f_csrf"', $html);
@@ -111,7 +111,7 @@ final class FormRenderingTest extends TestCase
     public function testTrRendersRow(): void
     {
         $tr = (new Tr())->addElement(new Td('1'))->addElement(new Td('2'));
-        $html = $tr->getHtml();
+        $html = $tr->render();
 
         $this->assertStringContainsString('<tr>', $html);
         $this->assertStringContainsString('</tr>', $html);

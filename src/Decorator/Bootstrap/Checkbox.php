@@ -7,4 +7,4 @@ $errorHtml = !empty($this->element->getError())
 $this->element->addClass(['form-check-input']);
 
 return '<div class="form-group"><label for="' . $this->element->getId() . '">' . $this->element->getTitle() . '</label>'
-    . $this->element->getHtml() . $errorHtml . '</div>';
+    . $this->element->render() . $errorHtml . '</div>';

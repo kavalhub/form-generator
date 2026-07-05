@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Form;
 
-use Kavalhub\FormGenerator\Form\InputCheckbox;
-use Kavalhub\FormGenerator\Form\InputNumber;
-use Kavalhub\FormGenerator\Form\InputPassword;
-use Kavalhub\FormGenerator\Form\InputRadio;
-use Kavalhub\FormGenerator\Form\InputText;
-use Kavalhub\FormGenerator\Form\Option;
-use Kavalhub\FormGenerator\Form\Select;
+use Kavalhub\FormGenerator\Html\InputCheckbox;
+use Kavalhub\FormGenerator\Html\InputNumber;
+use Kavalhub\FormGenerator\Html\InputPassword;
+use Kavalhub\FormGenerator\Html\InputRadio;
+use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Html\Option;
+use Kavalhub\FormGenerator\Html\Select;
 use Kavalhub\FormGenerator\Request\ArrayRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +34,7 @@ final class InputElementsTest extends TestCase
     public function testInputNumberRendersTypeNumber(): void
     {
         $input = new InputNumber('qty');
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('type="number"', $html);
     }
@@ -42,7 +42,7 @@ final class InputElementsTest extends TestCase
     public function testInputPasswordRendersTypePassword(): void
     {
         $input = new InputPassword('pass');
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('type="password"', $html);
     }
@@ -77,7 +77,7 @@ final class InputElementsTest extends TestCase
     public function testPlaceholderIsEscaped(): void
     {
         $input = (new InputText('q'))->setPlaceholder('"><x>');
-        $html = $input->getHtml();
+        $html = $input->render();
 
         $this->assertStringContainsString('placeholder="&quot;&gt;&lt;x&gt;"', $html);
     }

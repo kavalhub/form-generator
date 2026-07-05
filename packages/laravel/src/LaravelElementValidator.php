@@ -5,7 +5,7 @@ namespace Kavalhub\FormGenerator\Laravel;
 
 use Illuminate\Contracts\Validation\Factory as ValidatorFactory;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Form\InputSubmit;
+use Kavalhub\FormGenerator\Html\InputSubmit;
 use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 use Kavalhub\FormGenerator\Util\ElementDataCollector;
 use Kavalhub\FormGenerator\Validator\ElementValidator;
