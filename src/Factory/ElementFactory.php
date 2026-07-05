@@ -21,7 +21,7 @@ class ElementFactory implements ElementFactoryInterface
     public const ADD_ELEMENT = 'addElement';
     public const ADD_ELEMENT_BLOCK = 'addElementBlock';
     public const ADD_CALLBACK_VALIDATOR = 'addCallbackValidator';
-    public const ATTACH_OBSERVER = 'attachObserver';
+    public const SET_DISPATCHER = 'setDispatcher';
 
     public static function create(array $elementData): ElementInterface
     {

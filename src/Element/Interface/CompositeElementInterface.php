@@ -12,4 +12,6 @@ interface CompositeElementInterface
     public function removeElement(ElementInterface $element): self;
 
     public function getByName(string $name, bool $extract = false): Element;
+
+    public function getById(string $id, bool $extract = false): Element;
 }

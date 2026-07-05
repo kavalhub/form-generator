@@ -7,7 +7,7 @@ use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Trait\CallbackValidator;
 use Kavalhub\FormGenerator\Element\Trait\Error;
 use Kavalhub\FormGenerator\Element\Trait\Identifiable;
-use Kavalhub\FormGenerator\Element\Trait\Observable;
+use Kavalhub\FormGenerator\Element\Trait\DispatchesElementEvents;
 use Kavalhub\FormGenerator\Element\Trait\Required;
 use Kavalhub\FormGenerator\Element\Trait\Valid;
 use SplObjectStorage;
@@ -15,9 +15,9 @@ use SplObjectStorage;
 class Element implements ElementInterface
 {
     use CallbackValidator;
+    use DispatchesElementEvents;
     use Error;
     use Identifiable;
-    use Observable;
     use Required;
     use Valid;
 
@@ -25,7 +25,6 @@ class Element implements ElementInterface
 
     public function __construct()
     {
-        $this->observer = new SplObjectStorage();
     }
 
     public function getValue(): ?string

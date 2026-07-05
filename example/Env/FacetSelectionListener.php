@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Kavalhub\Example\Env;
 
-use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
-use Kavalhub\FormGenerator\Observer\ElementObserverInterface;
+use Kavalhub\FormGenerator\Event\ElementChangedEvent;
 
-class ObserverFacet implements ElementObserverInterface
+final class FacetSelectionListener
 {
     /** @var array<string, string[]> */
     private array $facetList = [];
@@ -20,9 +19,9 @@ class ObserverFacet implements ElementObserverInterface
         $this->facetList = [];
     }
 
-    public function update(ElementInterface $element): void
+    public function onElementChanged(ElementChangedEvent $event): void
     {
-        $this->facetList = array_merge($this->facetList, $element->getValueArray());
+        $this->facetList = array_merge($this->facetList, $event->getElement()->getValueArray());
     }
 
     /**
@@ -35,7 +34,13 @@ class ObserverFacet implements ElementObserverInterface
 
     public function hasSelection(): bool
     {
-        return $this->facetList !== [];
+        foreach ($this->facetList as $values) {
+            if ($values !== []) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

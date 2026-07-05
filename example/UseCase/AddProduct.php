@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kavalhub\Example\UseCase;
 
+use Kavalhub\Example\Domain\Product;
 use Kavalhub\Example\Env\Storage;
 
 readonly class AddProduct
@@ -11,11 +12,8 @@ readonly class AddProduct
     {
     }
 
-    /**
-     * @param array<int, string> $facetValues facet_id => value
-     */
-    public function execute(string $name, int $categoryId, float $price, array $facetValues): int
+    public function execute(Product $product): Product
     {
-        return $this->storage->addProduct($name, $categoryId, $price, $facetValues);
+        return $this->storage->addProduct($product);
     }
 }

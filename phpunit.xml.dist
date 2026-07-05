@@ -8,6 +8,7 @@
         <testsuite name="FormGenerator">
             <directory>tests</directory>
             <directory>packages/laravel/tests</directory>
+            <directory>packages/bootstrap/tests</directory>
         </testsuite>
     </testsuites>
     <source>

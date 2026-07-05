@@ -42,6 +42,32 @@ final class ElementDataCollector
         return null;
     }
 
+    public static function findById(ElementInterface $root, string $id): ?ElementInterface
+    {
+        if ($root->getId() === $id) {
+            return $root;
+        }
+
+        if (
+            $root instanceof ElementWithValue
+            && method_exists($root, 'getFormName')
+            && $root->getFormName() === $id
+        ) {
+            return $root;
+        }
+
+        if ($root->getComposite()) {
+            foreach ($root->getComposite()->getAll() as $child) {
+                $found = self::findById($child, $id);
+                if ($found !== null) {
+                    return $found;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @param array<string, string[]> $errorsByField
      */

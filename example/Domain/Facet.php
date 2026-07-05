@@ -8,7 +8,7 @@ readonly class Facet
     public function __construct(
         private string $name,
         private ?string $uuid = null,
-        private string $element = 'InputText',
+        private string $element = 'InputCheckbox',
     ) {
     }
 

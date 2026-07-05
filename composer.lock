@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19e48328b314b77dc47aac1e703aa501",
+    "content-hash": "5ddfe43ff899ff393b3bf1d29cfea18b",
     "packages": [],
     "packages-dev": [
         {
@@ -1478,6 +1478,47 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2025-09-02T23:55:36+00:00"
+        },
+        {
+            "name": "kavalhub/form-generator-bootstrap",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/bootstrap",
+                "reference": "4b55b75574f203067d59089e19589d8e91f1f43d"
+            },
+            "require": {
+                "kavalhub/form-generator": "^3.3",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kavalhub\\FormGenerator\\Bootstrap\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Kavalhub\\Tests\\FormGenerator\\Bootstrap\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Bootstrap decorator and templates for kavalhub/form-generator",
+            "homepage": "https://github.com/kavalhub/form-generator.git",
+            "keywords": [
+                "Bootstrap",
+                "Decorator",
+                "Form",
+                "PHP"
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "kavalhub/form-generator-laravel",
@@ -5438,7 +5479,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "kavalhub/form-generator-laravel": 20
+        "kavalhub/form-generator-laravel": 20,
+        "kavalhub/form-generator-bootstrap": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -56,19 +56,27 @@ echo $form->render();
 |-----------|------------|---------------------|
 | [`RequestInterface`](src/Request/Interface/RequestInterface.php) | Источник данных формы | `ElementRequest`, `ArrayRequest`, `PostOnlyRequest` |
 | [`ElementValidatorInterface`](src/Validator/Interface/ElementValidatorInterface.php) | Валидация и bind | `ElementValidator` |
-| [`DecoratorInterface`](src/Decorator/Interface/DecoratorInterface.php) | Рендеринг с темой | `BootstrapDecorator` |
+| [`DecoratorInterface`](src/Decorator/Interface/DecoratorInterface.php) | Рендеринг с темой | [`AbstractDecorator`](src/Decorator/AbstractDecorator.php); Bootstrap — пакет [`form-generator-bootstrap`](packages/bootstrap/) |
+| [`AjaxRenderStrategyInterface`](src/Ajax/Interface/AjaxRenderStrategyInterface.php) | HTML/CSS для AJAX-патчей | `NullAjaxRenderStrategy`; Bootstrap — в bootstrap-пакете |
+| [`ElementEventDispatcher`](src/Event/ElementEventDispatcher.php) | События элементов (связанные select, фильтры) | `ElementChangedEvent`, слушатели в приложении |
+
+Подробнее: [docs/element-events.md](docs/element-events.md), [docs/custom-templates.md](docs/custom-templates.md).
 
 ```mermaid
 flowchart LR
     App[Приложение] --> RequestInterface
     App --> ElementValidatorInterface
     App --> DecoratorInterface
+    App --> AjaxRenderStrategyInterface
     RequestInterface --> ElementRequest
     RequestInterface --> PostOnlyRequest
     RequestInterface --> LaravelRequestAdapter
     ElementValidatorInterface --> ElementValidator
     ElementValidatorInterface --> LaravelElementValidator
-    DecoratorInterface --> BootstrapDecorator
+    DecoratorInterface --> AbstractDecorator
+    AjaxRenderStrategyInterface --> NullAjaxRenderStrategy
+    DecoratorInterface --> BootstrapPackage[form-generator-bootstrap]
+    AjaxRenderStrategyInterface --> BootstrapPackage
 ```
 
 ## Request: GET, POST и свои адаптеры
@@ -162,8 +170,14 @@ if ($validator->handle($form)) {
 
 ## Bootstrap-декоратор
 
+Пакет [`kavalhub/form-generator-bootstrap`](packages/bootstrap/) (с 3.3 вынесен из core):
+
+```bash
+composer require kavalhub/form-generator-bootstrap
+```
+
 ```php
-use Kavalhub\FormGenerator\Decorator\Bootstrap\BootstrapDecorator;
+use Kavalhub\FormGenerator\Bootstrap\BootstrapDecorator;
 use Kavalhub\FormGenerator\Decorator\Interface\DecoratorInterface;
 
 /** @var DecoratorInterface $decorator */
@@ -171,7 +185,7 @@ $decorator = new BootstrapDecorator($form);
 echo $decorator->getHtml();
 ```
 
-Bootstrap сейчас входит в основной пакет. В будущем может быть вынесен в `kavalhub/form-generator-bootstrap`.
+Кастомные шаблоны для дизайнеров: [docs/custom-templates.md](docs/custom-templates.md).
 
 ## CSRF-защита (opt-in)
 
@@ -180,6 +194,96 @@ $form = (new Form('secure'))
     ->enableCsrf()
     ->addElement(/* ... */);
 ```
+
+## AJAX (3.1+)
+
+Библиотека не навязывает JS-фреймворк. Сервер возвращает JSON с ключом `REPLACE` — массив патчей DOM. Два режима:
+
+| Режим | Метод | Ответ |
+|-------|--------|--------|
+| **field** | `ElementAjaxHandler::handleField()` | `ID`, `CLASS`, `ERROR` (через `AjaxRenderStrategyInterface`) |
+| **form/block** | `ElementAjaxHandler::handleForm()` / `handleBlock()` | `ID`, `HTML` (через стратегию, напр. `BootstrapAjaxRenderStrategy`) |
+
+Поиск элемента по DOM-id: `ElementDataCollector::findById()` или `$form->getById()`.  
+Короткое имя поля — `getByName()`; для AJAX используйте `getId()` / `getFormName()`.
+
+### Endpoint (пример)
+
+```php
+use Kavalhub\FormGenerator\Ajax\AjaxRequest;
+use Kavalhub\FormGenerator\Ajax\ElementAjaxHandler;
+use Kavalhub\FormGenerator\Bootstrap\BootstrapAjaxRenderStrategy;
+use Kavalhub\FormGenerator\Request\ElementRequest;
+use Kavalhub\FormGenerator\Validator\ElementValidator;
+
+header('Content-Type: application/json; charset=utf-8');
+
+if (!AjaxRequest::isXmlHttpRequest()) {
+    http_response_code(400);
+    exit;
+}
+
+$validator = new ElementValidator(new ElementRequest());
+$handler = new ElementAjaxHandler($validator, new BootstrapAjaxRenderStrategy());
+$form = /* ваша форма */;
+
+if ($targetId = AjaxRequest::readTargetId()) {
+    echo $handler->handleField($form, $targetId)->jsonEncode();
+    exit;
+}
+
+if ($validator->checkSubmit($submit) && $validator->handle($form)) {
+    echo $handler->handleBlock($table)->setMessage('Сохранено')->jsonEncode();
+}
+```
+
+Параметр `action` (или `target_id`) = `getId()` поля, как в demo.
+
+### Клиент (минимальный пример, не входит в пакет)
+
+```javascript
+form.querySelector('.js-on-input').addEventListener('input', function () {
+    const fd = new FormData();
+    fd.append('action', this.id);
+    fd.append(this.name, this.value);
+    fetch('/ajax.php', { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(data => data.REPLACE.forEach(patch => {
+            const el = document.getElementById(patch.ID);
+            el.classList.remove('is-valid', 'is-invalid');
+            if (patch.CLASS) el.classList.add(patch.CLASS);
+            el.parentElement.querySelectorAll('.invalid-feedback').forEach(n => n.remove());
+            if (patch.ERROR) el.insertAdjacentHTML('afterend', patch.ERROR);
+            if (patch.HTML) document.getElementById(patch.ID).outerHTML = patch.HTML;
+        }));
+});
+```
+
+Живой пример с переключателем «классика / AJAX» — demo-проект `kavalhub/form-demo`: главная демонстрация на `?page=filter` (фильтр товаров, чекбоксы/радио на лету), также `?page=facet` (добавление фасета).
+
+## JSON API (3.2+)
+
+Структурированный обмен без HTML-патчей: валидация и сабмит формы через JSON.
+
+| Класс | Назначение |
+|-------|------------|
+| `Request\JsonElementRequest` | Источник данных из JSON / массива |
+| `Api\FormApiHandler` | `handleField()` / `handleForm()` → `FormApiResponse` |
+| `Api\FormJsonSchemaExporter` | JSON Schema полей формы (интроспекция дерева) |
+| `Api\OpenApiDocumentBuilder` | Сборка OpenAPI 3.0 из списка форм |
+
+```php
+use Kavalhub\FormGenerator\Api\FormApiHandler;
+use Kavalhub\FormGenerator\Request\JsonElementRequest;
+use Kavalhub\FormGenerator\Validator\ElementValidator;
+
+$request = JsonElementRequest::fromArray(['contact_email' => 'user@example.com']);
+$handler = new FormApiHandler(new ElementValidator($request));
+$response = $handler->handleForm($form);
+echo $response->jsonEncode(); // {"valid":true,"fields":{...},"data":{...}}
+```
+
+OpenAPI и наполнение БД через JSON — demo: `GET /api.php`, `POST /api.php`, Swagger UI на `/api-docs.html`.
 
 ## Сбор данных из дерева элементов
 

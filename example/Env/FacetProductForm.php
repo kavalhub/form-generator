@@ -6,6 +6,8 @@ namespace Kavalhub\Example\Env;
 use Kavalhub\Example\UseCase\CategoryList;
 use Kavalhub\Example\UseCase\ProductList;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
+use Kavalhub\FormGenerator\Event\ElementChangedEvent;
+use Kavalhub\FormGenerator\Event\ElementEventDispatcher;
 use Kavalhub\FormGenerator\Factory\ElementFactory;
 use Kavalhub\FormGenerator\Html\Form;
 use Kavalhub\FormGenerator\Html\Group;
@@ -13,7 +15,6 @@ use Kavalhub\FormGenerator\Html\InputCheckbox;
 use Kavalhub\FormGenerator\Html\InputSubmit;
 use Kavalhub\FormGenerator\Html\Label;
 use Kavalhub\FormGenerator\Html\Nav;
-use Kavalhub\FormGenerator\Observer\ElementObserverInterface;
 use Kavalhub\FormGenerator\Validator\Interface\ElementValidatorInterface;
 
 class FacetProductForm extends Form
@@ -28,6 +29,7 @@ class FacetProductForm extends Form
     private CategoryList $categoryList;
     private ProductList $productList;
     private bool $filtered = false;
+    private FacetSelectionListener $facetSelection;
 
     /** @var array{categories: string[], facets: array<string, string[]>} */
     private array $appliedFilters = [
@@ -38,13 +40,21 @@ class FacetProductForm extends Form
     public function __construct(
         private readonly Storage $storage,
         private readonly ElementValidatorInterface $validator,
-        private ElementObserverInterface $elementObserver,
+        ?ElementEventDispatcher $dispatcher = null,
+        ?FacetSelectionListener $facetSelection = null,
     ) {
         parent::__construct(self::NAME);
+        $this->dispatcher = $dispatcher ?? new ElementEventDispatcher();
+        $this->facetSelection = $facetSelection ?? new FacetSelectionListener($this->storage);
+        $this->dispatcher->addListener(
+            ElementChangedEvent::class,
+            $this->facetSelection->onElementChanged(...),
+        );
+
         $this->categoryList = new CategoryList($this->storage);
         $this->productList = new ProductList($this->storage);
         $this->submit = (new InputSubmit(self::BUTTON_NAME))->setDefaultValue(self::BUTTON_VALUE);
-        $this->showCategory = (new InputCheckbox('s', 'c'));
+        $this->showCategory = (new InputCheckbox('s', 'c'))->addClass(['js-show-category']);
 
         $this->categoryGroup = $this->getElementCategory();
 
@@ -74,21 +84,51 @@ class FacetProductForm extends Form
 
     public function validate(): bool
     {
+        return $this->applyFilter(false);
+    }
+
+    public function applyFilter(bool $force = false): bool
+    {
         $this->filtered = false;
         $this->appliedFilters = ['categories' => [], 'facets' => []];
 
         $this->validator->handle($this->showCategory);
         $this->removeElement($this->submit);
         $this->removeElement($this->categoryGroup);
-        $this->addElement($this->getElementCategory());
+        $this->categoryGroup = $this->getElementCategory();
+        $this->addElement($this->categoryGroup);
         $this->addElement($this->submit);
-        if ($this->validator->checkSubmit($this->submit) && $this->validator->handle($this)) {
+        if (($force || $this->validator->checkSubmit($this->submit)) && $this->validator->handle($this)) {
             $this->addElementFacet();
 
             return true;
         }
 
         return false;
+    }
+
+    public function getSubmit(): InputSubmit
+    {
+        return $this->submit;
+    }
+
+    public function getShowCategoryCheckboxId(): string
+    {
+        return $this->showCategory->getId();
+    }
+
+    /**
+     * Перестроить список категорий (показать/скрыть пустые) без применения фильтра.
+     */
+    public function refreshCategoryGroup(): ElementInterface
+    {
+        $this->categoryList = new CategoryList($this->storage);
+        $this->validator->handle($this->showCategory);
+        $group = $this->getElementCategory();
+        $group->setParent($this);
+        $this->validator->handle($group);
+
+        return $group;
     }
 
     public function isFiltered(): bool
@@ -102,6 +142,16 @@ class FacetProductForm extends Form
     public function getAppliedFilters(): array
     {
         return $this->appliedFilters;
+    }
+
+    public function getDispatcher(): ElementEventDispatcher
+    {
+        return $this->dispatcher;
+    }
+
+    public function getFacetSelection(): FacetSelectionListener
+    {
+        return $this->facetSelection;
     }
 
     private function getElementCategory(): ElementInterface
@@ -144,9 +194,9 @@ class FacetProductForm extends Form
     private function addElementFacet(): void
     {
         $this->filtered = true;
-        $this->elementObserver->reset();
+        $this->facetSelection->reset();
 
-        $categoryValues = $this->categoryGroup->getValueArray()['cat'] ?? [];
+        $categoryValues = $this->getByName('gc')->getValueArray()['cat'] ?? [];
         $this->appliedFilters['categories'] = $this->resolveCategoryNames($categoryValues);
 
         if ($categoryValues !== []) {
@@ -164,7 +214,7 @@ class FacetProductForm extends Form
                             'border',
                             'rounded-2',
                         ],
-                        ElementFactory::ATTACH_OBSERVER => $this->elementObserver,
+                        ElementFactory::SET_DISPATCHER => $this->dispatcher,
                     ],
                     [
                         ElementFactory::ADD_ELEMENT_BLOCK => [
@@ -188,18 +238,37 @@ class FacetProductForm extends Form
             $this->addElement($group);
         }
         $this->validator->handle($this);
-        $this->addElement($this->submit)
-            ->notify();
+        $this->addElement($this->submit);
+        if ($this->hasCheckedFacet()) {
+            $this->notify();
 
-        if ($this->elementObserver->hasSelection()) {
-            $this->appliedFilters['facets'] = $this->elementObserver->getFacetList();
-            $productIds = $this->elementObserver->getProductIds();
-            if ($productIds === []) {
-                $this->productList->addRawFilter('1 = 0');
-            } else {
-                $this->productList->addProductIdsFilter($productIds);
+            if ($this->facetSelection->hasSelection()) {
+                $this->appliedFilters['facets'] = $this->facetSelection->getFacetList();
+                $productIds = $this->facetSelection->getProductIds();
+                if ($productIds === []) {
+                    $this->productList->addRawFilter('1 = 0');
+                } else {
+                    $this->productList->addProductIdsFilter($productIds);
+                }
             }
         }
+    }
+
+    private function hasCheckedFacet(): bool
+    {
+        foreach ($this->productList->getFacet() as $key => $_facet) {
+            $group = $this->getByName('g' . $key);
+            if (!$group->getComposite()) {
+                continue;
+            }
+            foreach ($group->getComposite()->getAll() as $child) {
+                if (method_exists($child, 'isChecked') && $child->isChecked()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

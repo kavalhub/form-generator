@@ -7,6 +7,7 @@ use Kavalhub\Example\Domain\Category;
 use Kavalhub\Example\Env\AddCategoryForm;
 use Kavalhub\Example\Env\AddProductForm;
 use Kavalhub\Example\Env\Storage;
+use Kavalhub\Example\UseCase\AddProduct;
 use Kavalhub\FormGenerator\Request\ArrayRequest;
 use Kavalhub\FormGenerator\Validator\ElementValidator;
 use PDO;
@@ -57,5 +58,51 @@ final class ExampleFormsTest extends TestCase
         $this->assertStringContainsString('name="addProduct_category"', $html);
         $this->assertStringContainsString('name="addProduct_facet_1"', $html);
         $this->assertStringContainsString('<select', $html);
+    }
+
+    public function testAddProductFormCollectsFacetValuesAfterValidation(): void
+    {
+        $storage = $this->createMemoryStorage();
+        $storage->addCategory(new Category('Электроника', 1));
+        $form = new AddProductForm($storage, new ElementValidator(new ArrayRequest([
+            'addProduct_name' => 'Товар',
+            'addProduct_price' => '100',
+            'addProduct_category' => '1',
+            'addProduct_facet_1' => 'Красный',
+            'addProduct_submit' => 'Добавить',
+        ])));
+
+        $this->assertTrue($form->validate());
+        $this->assertSame([1 => 'Красный'], $form->getFacetValues());
+    }
+
+    public function testAddProductFormBuildsDomainProductAndPersistsIt(): void
+    {
+        $storage = $this->createMemoryStorage();
+        $storage->addCategory(new Category('Электроника', 1));
+        $form = new AddProductForm($storage, new ElementValidator(new ArrayRequest([
+            'addProduct_name' => 'Товар',
+            'addProduct_price' => '100',
+            'addProduct_category' => '1',
+            'addProduct_facet_1' => 'Красный',
+            'addProduct_submit' => 'Добавить',
+        ])));
+
+        $this->assertTrue($form->validate());
+
+        $product = $form->toProduct($storage);
+        $this->assertSame('Товар', $product->getName());
+        $this->assertSame(100.0, $product->getPrice());
+        $this->assertSame('Электроника', $product->getCategory()->getName());
+        $this->assertNull($product->getUuid());
+
+        $saved = (new AddProduct($storage))->execute($product);
+        $this->assertSame('1', $saved->getUuid());
+        $this->assertSame('Товар', $saved->getName());
+
+        $pdo = new \ReflectionProperty(Storage::class, 'pdo');
+        $pdo->setAccessible(true);
+        $db = $pdo->getValue($storage);
+        $this->assertSame(1, (int)$db->query('SELECT COUNT(*) FROM temp_product_facet')->fetchColumn());
     }
 }
