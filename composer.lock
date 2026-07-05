@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37fc54b5e1d3dff196bf98d2a6af5143",
+    "content-hash": "19e48328b314b77dc47aac1e703aa501",
     "packages": [],
     "packages-dev": [
         {
@@ -1485,13 +1485,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/laravel",
-                "reference": "13b8193c84d9823cff250471ec464dc206723e41"
+                "reference": "4cf338d095f49cec1fd66287a6bb5d3a9127b104"
             },
             "require": {
                 "illuminate/http": "^10.48|^11.0",
                 "illuminate/translation": "^10.48|^11.0",
                 "illuminate/validation": "^10.48|^11.0",
-                "kavalhub/form-generator": "^2.0",
+                "kavalhub/form-generator": "^3.0",
                 "php": "^8.2"
             },
             "require-dev": {
