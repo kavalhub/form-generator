@@ -1,0 +1,39 @@
+<div class="fg-twig-card mt-4">
+    <div class="demo-filter-results-header">
+        <strong>Результаты ({{ totalCount }})</strong>
+        {% if pageMeta %}
+            <span class="demo-filter-results-meta">{{ pageMeta }}</span>
+        {% endif %}
+    </div>
+    {% if empty %}
+        <p class="demo-filter-empty">Нет товаров по выбранным фильтрам.</p>
+    {% else %}
+        <div class="demo-filter-table-wrap">
+            <table class="fg-twig-table demo-filter-results-table demo-filter-results-table--striped">
+                <thead>
+                <tr>
+                    <th class="demo-filter-col-id">ID</th>
+                    <th>Название</th>
+                    <th>Категория</th>
+                    <th>Цена</th>
+                    <th class="demo-filter-col-facets">Фасеты</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td class="demo-filter-col-id">{{ row.id }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.category }}</td>
+                        <td>{{ row.price }} {{ row.currency }}</td>
+                        <td class="demo-filter-col-facets">{{ row.facetsHtml|raw }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if paginatorHtml %}
+            <div class="demo-filter-pagination">{{ paginatorHtml|raw }}</div>
+        {% endif %}
+    {% endif %}
+</div>

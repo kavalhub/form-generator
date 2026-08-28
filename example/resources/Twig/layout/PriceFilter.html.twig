@@ -1,0 +1,22 @@
+{% set children = element.all %}
+{% set minEl = children|first %}
+{% set maxEl = children|length > 1 ? children[1] : null %}
+{% do element.addClass(['demo-price-filter']) %}
+<div{{ element.htmlTrait(['HtmlName'])|raw }}>
+  <div class="demo-price-filter__rows">
+    {% if minEl %}
+      <div class="demo-price-filter__row">
+        <span class="demo-price-filter__caption">От</span>
+        <span class="js-price-min-label demo-price-label"></span>
+        {{ decorator.decorateChild(minEl).render|raw }}
+      </div>
+    {% endif %}
+    {% if maxEl %}
+      <div class="demo-price-filter__row">
+        <span class="demo-price-filter__caption">До</span>
+        <span class="js-price-max-label demo-price-label"></span>
+        {{ decorator.decorateChild(maxEl).render|raw }}
+      </div>
+    {% endif %}
+  </div>
+</div>

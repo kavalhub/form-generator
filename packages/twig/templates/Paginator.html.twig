@@ -1,0 +1,23 @@
+{% if element.numPages <= 1 %}
+<div{{ element.htmlTrait(['HtmlName'])|raw }}></div>
+{% else %}
+{% if element.class %}
+  {% do element.addClass(element.class|split(' ')) %}
+{% endif %}
+{% set nav %}
+<nav aria-label="Pagination">
+  <ul class="fg-twig-pagination">
+    {% for child in element.all %}
+      {% if 'fg-paginator-ellipsis' in child.classList %}
+        <li class="fg-twig-pagination-ellipsis"><span>...</span></li>
+      {% elseif 'fg-paginator-current' in child.classList %}
+        <li class="fg-twig-pagination-current"><span>{{ child.label }}</span></li>
+      {% else %}
+        <li>{{ decorator.decorateChild(child).render|raw }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+{% endset %}
+<div{{ element.htmlTrait(['HtmlName'])|raw }}>{{ nav|raw }}</div>
+{% endif %}

@@ -1,6 +1,6 @@
 {% set parts = [] %}
 {% for child in element.all %}
-  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+  {% set parts = parts|merge([decorator.decorateChild(child).render]) %}
 {% endfor %}
 {% set error = element.error is not empty ? '<div class="fg-twig-error">' ~ element.displayErrors ~ '</div>' : '' %}
 {% do element.addClass(['fg-twig-group']) %}

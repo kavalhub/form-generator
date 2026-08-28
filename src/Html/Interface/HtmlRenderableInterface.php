@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Kavalhub\FormGenerator\Html\Interface;
 
-interface HtmlRenderableInterface
+interface HtmlRenderableInterface extends HtmlOutputInterface
 {
-    public function render(string $innerHtml = ''): string;
 }

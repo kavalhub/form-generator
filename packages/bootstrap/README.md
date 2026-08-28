@@ -1,6 +1,6 @@
 # kavalhub/form-generator-bootstrap
 
-Bootstrap-декоратор и PHP-шаблоны для [kavalhub/form-generator](https://github.com/kavalhub/form-generator).
+Bootstrap-тема и PHP-шаблоны для [kavalhub/form-generator](https://github.com/kavalhub/form-generator).
 
 ## Установка
 
@@ -8,17 +8,21 @@ Bootstrap-декоратор и PHP-шаблоны для [kavalhub/form-generat
 composer require kavalhub/form-generator-bootstrap
 ```
 
+Требует `kavalhub/form-generator` **^4.0**.
+
 ## Использование
 
 ```php
-use Kavalhub\FormGenerator\Bootstrap\BootstrapDecorator;
 use Kavalhub\FormGenerator\Html\Form;
 use Kavalhub\FormGenerator\Html\InputText;
+use Kavalhub\FormGenerator\Render\ElementRenderer;
+use Kavalhub\FormGenerator\Render\RenderTheme;
 
 $form = (new Form('contact'))
     ->addElement((new InputText('email'))->setRequired());
 
-echo (new BootstrapDecorator($form))->getHtml();
+$renderer = (new ElementRenderer())->setTheme(RenderTheme::bootstrap());
+echo $renderer->html($form);
 ```
 
 ## AJAX
@@ -38,9 +42,9 @@ $handler = new ElementAjaxHandler(
 
 Опционально укажите каталог с кастомными шаблонами (см. [docs/custom-templates.md](../../docs/custom-templates.md) в основном репозитории).
 
-## Свой декоратор
+## Кастомные шаблоны
 
-Наследуйте [`AbstractDecorator`](../form-generator/src/Decorator/AbstractDecorator.php) из core и положите шаблоны рядом с классом или укажите путь через `setTemplate()`.
+Передайте `customPath` в `BootstrapTheme::create()` или `RenderTheme::bootstrap(null, $customPath)`.
 
 ## Лицензия
 

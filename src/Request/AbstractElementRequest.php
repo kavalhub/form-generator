@@ -16,7 +16,9 @@ abstract class AbstractElementRequest implements RequestInterface
         $value = $this->get($element->getFormName());
         if (isset($value)) {
             foreach ($value as $item) {
-                $element->setValue((string)$item);
+                if (method_exists($element, 'setValue')) {
+                    $element->setValue((string)$item);
+                }
             }
         }
     }

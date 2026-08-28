@@ -18,7 +18,7 @@ use Kavalhub\FormGenerator\Html\InputText;
 $form = (new Form('contact'))
     ->addElement((new InputText('email'))->setRequired());
 
-echo (new TwigDecorator($form))->getHtml();
+echo (new TwigDecorator($form))->render();
 ```
 
 ## Кастомные шаблоны
@@ -26,12 +26,12 @@ echo (new TwigDecorator($form))->getHtml();
 ```php
 echo (new TwigDecorator($input))
     ->setTemplate(__DIR__ . '/../resources/Twig')
-    ->getHtml();
+    ->render();
 
 $input->setPath('CustomElements/InputText.html.twig');
 ```
 
-В шаблоне: `element`, `decorator`, `decorator.decorateChild(child).html`.
+В шаблоне: `element`, `decorator`, `decorator.decorateChild(child).render`.
 
 ## AJAX
 

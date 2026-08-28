@@ -39,6 +39,22 @@ class CompositeElement extends Element implements CompositeElementInterface
         return $this;
     }
 
+    public function useStorage(bool $enabled = true): self
+    {
+        $this->elementStorage->rewind();
+        foreach ($this->elementStorage as $element) {
+            if (method_exists($element, 'useStorage')) {
+                $element->useStorage($enabled);
+            }
+            // Рекурсивно для вложенных композитов
+            if ($element->getComposite()) {
+                $element->getComposite()->useStorage($enabled);
+            }
+        }
+
+        return $this;
+    }
+
     public function getValueArray(): array
     {
         $values = [];

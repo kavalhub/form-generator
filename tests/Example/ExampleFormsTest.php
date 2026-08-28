@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Example;
 
+use Kavalhub\Example\Application\UseCase\AddProduct;
 use Kavalhub\Example\Domain\Category;
-use Kavalhub\Example\Env\AddCategoryForm;
-use Kavalhub\Example\Env\AddProductForm;
-use Kavalhub\Example\Env\Storage;
-use Kavalhub\Example\UseCase\AddProduct;
+use Kavalhub\Example\Infrastructure\Persistence\PdoCatalogRepository;
+use Kavalhub\Example\Presentation\Web\Form\AddCategoryForm;
+use Kavalhub\Example\Presentation\Web\Form\AddProductForm;
 use Kavalhub\FormGenerator\Request\ArrayRequest;
 use Kavalhub\FormGenerator\Validator\ElementValidator;
 use PDO;
@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ExampleFormsTest extends TestCase
 {
-    private function createMemoryStorage(): Storage
+    private function createMemoryRepository(): PdoCatalogRepository
     {
         if (!in_array('sqlite', PDO::getAvailableDrivers(), true)) {
             $this->markTestSkipped('PDO sqlite driver is required for this test.');
@@ -32,13 +32,13 @@ final class ExampleFormsTest extends TestCase
         $pdo->exec('INSERT INTO temp_price (id, currency) VALUES (1, \'RUB\')');
         $pdo->exec('INSERT INTO temp_facet (name, element) VALUES (\'Цвет\', \'InputText\')');
 
-        return new Storage($pdo);
+        return new PdoCatalogRepository($pdo);
     }
 
     public function testAddCategoryFormValidatesWithPostRequest(): void
     {
-        $storage = $this->createMemoryStorage();
-        $form = new AddCategoryForm($storage, new ElementValidator(new ArrayRequest([
+        $repository = $this->createMemoryRepository();
+        $form = new AddCategoryForm($repository, new ElementValidator(new ArrayRequest([
             'addCategory_name' => 'Новая',
             'addCategory_sort' => '1',
             'addCategory_submit' => 'Добавить',
@@ -49,9 +49,9 @@ final class ExampleFormsTest extends TestCase
 
     public function testAddProductFormContainsCategoryAndFacetFields(): void
     {
-        $storage = $this->createMemoryStorage();
-        $storage->addCategory(new Category('Электроника', 1));
-        $form = new AddProductForm($storage, new ElementValidator(new ArrayRequest([])));
+        $repository = $this->createMemoryRepository();
+        $repository->addCategory(new Category('Электроника', 1));
+        $form = new AddProductForm($repository, new ElementValidator(new ArrayRequest([])));
         $html = $form->render();
 
         $this->assertStringContainsString('name="addProduct_name"', $html);
@@ -62,9 +62,9 @@ final class ExampleFormsTest extends TestCase
 
     public function testAddProductFormCollectsFacetValuesAfterValidation(): void
     {
-        $storage = $this->createMemoryStorage();
-        $storage->addCategory(new Category('Электроника', 1));
-        $form = new AddProductForm($storage, new ElementValidator(new ArrayRequest([
+        $repository = $this->createMemoryRepository();
+        $repository->addCategory(new Category('Электроника', 1));
+        $form = new AddProductForm($repository, new ElementValidator(new ArrayRequest([
             'addProduct_name' => 'Товар',
             'addProduct_price' => '100',
             'addProduct_category' => '1',
@@ -78,9 +78,9 @@ final class ExampleFormsTest extends TestCase
 
     public function testAddProductFormBuildsDomainProductAndPersistsIt(): void
     {
-        $storage = $this->createMemoryStorage();
-        $storage->addCategory(new Category('Электроника', 1));
-        $form = new AddProductForm($storage, new ElementValidator(new ArrayRequest([
+        $repository = $this->createMemoryRepository();
+        $repository->addCategory(new Category('Электроника', 1));
+        $form = new AddProductForm($repository, new ElementValidator(new ArrayRequest([
             'addProduct_name' => 'Товар',
             'addProduct_price' => '100',
             'addProduct_category' => '1',
@@ -90,19 +90,19 @@ final class ExampleFormsTest extends TestCase
 
         $this->assertTrue($form->validate());
 
-        $product = $form->toProduct($storage);
+        $product = $form->toProduct($repository);
         $this->assertSame('Товар', $product->getName());
         $this->assertSame(100.0, $product->getPrice());
         $this->assertSame('Электроника', $product->getCategory()->getName());
         $this->assertNull($product->getUuid());
 
-        $saved = (new AddProduct($storage))->execute($product);
+        $saved = (new AddProduct($repository))->execute($product);
         $this->assertSame('1', $saved->getUuid());
         $this->assertSame('Товар', $saved->getName());
 
-        $pdo = new \ReflectionProperty(Storage::class, 'pdo');
+        $pdo = new \ReflectionProperty(PdoCatalogRepository::class, 'pdo');
         $pdo->setAccessible(true);
-        $db = $pdo->getValue($storage);
+        $db = $pdo->getValue($repository);
         $this->assertSame(1, (int)$db->query('SELECT COUNT(*) FROM temp_product_facet')->fetchColumn());
     }
 }

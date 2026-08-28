@@ -11,6 +11,10 @@ final class AjaxRequest
             && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
+    /**
+     * @deprecated Do not bypass the form request pipeline (element → request → validator).
+     *             Prefer checkSubmit / handle on form fields to identify the action.
+     */
     public static function readTargetId(): ?string
     {
         foreach (['action', 'target_id'] as $param) {

@@ -9,7 +9,7 @@ if ($children !== []) {
         $legend = trim(strip_tags($first->render()));
     }
     foreach ($children as $child) {
-        $body .= '<span class="fg-blade-inline-option">' . $decorator->decorateChild($child)->getHtml() . '</span>';
+        $body .= '<span class="fg-blade-inline-option">' . $decorator->decorateChild($child)->render() . '</span>';
     }
 }
 $__html = '<fieldset class="fg-blade-fieldset"><legend class="fg-blade-legend">'

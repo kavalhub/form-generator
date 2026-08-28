@@ -20,7 +20,7 @@ use Kavalhub\FormGenerator\Html\InputText;
 $form = (new Form('contact'))
     ->addElement((new InputText('email'))->setRequired());
 
-echo (new TailwindDecorator($form))->getHtml();
+echo (new TailwindDecorator($form))->render();
 ```
 
 ## AJAX

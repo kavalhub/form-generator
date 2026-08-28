@@ -6,6 +6,7 @@ namespace Kavalhub\FormGenerator\Util;
 use Kavalhub\FormGenerator\Element\ElementWithValue;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Element\Interface\SkipsValueCollection;
+use Kavalhub\FormGenerator\Request\Interface\RequestInterface;
 
 final class ElementDataCollector
 {
@@ -40,6 +41,59 @@ final class ElementDataCollector
         }
 
         return null;
+    }
+
+    /**
+     * First value element whose getFormName() is present in the request
+     * (for radios/checkboxes: the option whose value is in the request).
+     */
+    public static function findInRequest(
+        ElementInterface $root,
+        RequestInterface $request,
+    ): ?ElementInterface {
+        $matches = [];
+        self::collectRequestMatches($root, $request, $matches);
+
+        return $matches[0] ?? null;
+    }
+
+    /**
+     * @param list<ElementInterface> $matches
+     */
+    private static function collectRequestMatches(
+        ElementInterface $element,
+        RequestInterface $request,
+        array &$matches,
+    ): void {
+        if ($element->getComposite()) {
+            foreach ($element->getComposite()->getAll() as $child) {
+                self::collectRequestMatches($child, $request, $matches);
+            }
+        }
+
+        if (!$element instanceof ElementWithValue || !method_exists($element, 'getFormName')) {
+            return;
+        }
+
+        $formName = $element->getFormName();
+        if ($formName === '') {
+            return;
+        }
+
+        $values = $request->get($formName);
+        if ($values === null) {
+            return;
+        }
+
+        if (method_exists($element, 'isChecked') || method_exists($element, 'isSelected')) {
+            if (in_array($element->getValue(), $values, true)) {
+                $matches[] = $element;
+            }
+
+            return;
+        }
+
+        $matches[] = $element;
     }
 
     public static function findById(ElementInterface $root, string $id): ?ElementInterface

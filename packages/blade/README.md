@@ -18,7 +18,7 @@ use Kavalhub\FormGenerator\Html\InputText;
 $form = (new Form('contact'))
     ->addElement((new InputText('email'))->setRequired());
 
-echo (new BladeDecorator($form))->getHtml();
+echo (new BladeDecorator($form))->render();
 ```
 
 ## Кастомные шаблоны
@@ -26,7 +26,7 @@ echo (new BladeDecorator($form))->getHtml();
 ```php
 echo (new BladeDecorator($input))
     ->setTemplate(__DIR__ . '/../resources/form-templates')
-    ->getHtml();
+    ->render();
 ```
 
 В шаблоне доступны переменные `$element` и `$decorator` (для рекурсивного рендера дочерних элементов).

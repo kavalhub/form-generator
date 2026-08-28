@@ -7,7 +7,7 @@
   <div class="fg-twig-fieldset-options">
   {% for child in element.all %}
     {% if not loop.first %}
-      <span class="fg-twig-inline-option">{{ decorator.decorateChild(child).html|raw }}</span>
+      <span class="fg-twig-inline-option">{{ decorator.decorateChild(child).render|raw }}</span>
     {% endif %}
   {% endfor %}
   </div>

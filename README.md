@@ -57,7 +57,7 @@ echo $form->render();
 | [`RequestInterface`](src/Request/Interface/RequestInterface.php) | Источник данных формы | `ElementRequest`, `ArrayRequest`, `PostOnlyRequest` |
 | [`ElementValidatorInterface`](src/Validator/Interface/ElementValidatorInterface.php) | Валидация и bind | `ElementValidator` |
 | [`DecoratorInterface`](src/Decorator/Interface/DecoratorInterface.php) | Рендеринг с темой | [`AbstractDecorator`](src/Decorator/AbstractDecorator.php); Bootstrap — пакет [`form-generator-bootstrap`](packages/bootstrap/) |
-| [`AjaxRenderStrategyInterface`](src/Ajax/Interface/AjaxRenderStrategyInterface.php) | HTML/CSS для AJAX-патчей | `NullAjaxRenderStrategy`; Bootstrap — в bootstrap-пакете |
+| [`AjaxRenderStrategyInterface`](src/Ajax/Interface/AjaxRenderStrategyInterface.php) | AJAX-патчи поверх текущей темы renderer | [`ThemeAjaxRenderStrategy`](src/Ajax/ThemeAjaxRenderStrategy.php); BC: `NullAjaxRenderStrategy`, bootstrap-пакет |
 | [`ElementEventDispatcher`](src/Event/ElementEventDispatcher.php) | События элементов (связанные select, фильтры) | `ElementChangedEvent`, слушатели в приложении |
 
 Подробнее: [docs/element-events.md](docs/element-events.md), [docs/custom-templates.md](docs/custom-templates.md).
@@ -74,9 +74,10 @@ flowchart LR
     ElementValidatorInterface --> ElementValidator
     ElementValidatorInterface --> LaravelElementValidator
     DecoratorInterface --> AbstractDecorator
-    AjaxRenderStrategyInterface --> NullAjaxRenderStrategy
+    AjaxRenderStrategyInterface --> ThemeAjaxRenderStrategy
     DecoratorInterface --> BootstrapPackage[form-generator-bootstrap]
-    AjaxRenderStrategyInterface --> BootstrapPackage
+    ThemeAjaxRenderStrategy --> ElementRenderer
+    ElementRenderer --> BootstrapPackage
 ```
 
 ## Request: GET, POST и свои адаптеры
@@ -88,6 +89,8 @@ flowchart LR
 ## Demo-приложение
 
 Примеры использования (`Kavalhub\Example\`) вынесены в отдельный проект и **не входят** в autoload при `composer require kavalhub/form-generator`. В репозитории библиотеки каталог `example/` доступен только через `autoload-dev` для PHPUnit.
+
+Минимальное копируемое демо — каталог [`simpleExample/`](simpleExample/): после `composer require` скопируйте его в проект и укажите document root на `simpleExample/public` (нужен также `kavalhub/form-generator-bootstrap`). Подробности: [simpleExample/README.md](simpleExample/README.md).
 
 ```php
 $request = new ElementRequest();
@@ -182,7 +185,7 @@ use Kavalhub\FormGenerator\Decorator\Interface\DecoratorInterface;
 
 /** @var DecoratorInterface $decorator */
 $decorator = new BootstrapDecorator($form);
-echo $decorator->getHtml();
+echo $decorator->render();
 ```
 
 Кастомные шаблоны для дизайнеров: [docs/custom-templates.md](docs/custom-templates.md).
@@ -200,7 +203,7 @@ use Kavalhub\FormGenerator\Blade\BladeDecorator;
 
 echo (new BladeDecorator($form))
     ->setTemplate(__DIR__ . '/resources/form-templates')
-    ->getHtml();
+    ->render();
 ```
 
 Для AJAX: `BladeAjaxRenderStrategy`. Demo поддерживает переключатель HTML / Bootstrap / Blade и per-element шаблон для фасета «Бренд».
@@ -220,7 +223,7 @@ $form = (new Form('secure'))
 | Режим | Метод | Ответ |
 |-------|--------|--------|
 | **field** | `ElementAjaxHandler::handleField()` | `ID`, `CLASS`, `ERROR` (через `AjaxRenderStrategyInterface`) |
-| **form/block** | `ElementAjaxHandler::handleForm()` / `handleBlock()` | `ID`, `HTML` (через стратегию, напр. `BootstrapAjaxRenderStrategy`) |
+| **form/block** | `ElementAjaxHandler::handleForm()` / `handleBlock()` | `ID`, `HTML` (через `ThemeAjaxRenderStrategy` + текущий `RenderTheme`) |
 
 Поиск элемента по DOM-id: `ElementDataCollector::findById()` или `$form->getById()`.  
 Короткое имя поля — `getByName()`; для AJAX используйте `getId()` / `getFormName()`.
@@ -237,8 +240,8 @@ $form->setMethod('get')
 $input = (new InputText('name'))->setAjax();
 ```
 
-В HTML: `data-fg-ajax="true"`, опционально `data-fg-url-state="replaceState"`.  
-`setAjax()` на **форме** — перехват `submit` и (в demo) `change` на полях фильтра; на **поле** — field mode (`action` = `getId()`).
+В HTML у элементов, которые умеют AJAX: `data-fg-ajax="true"`; опционально на форме `data-fg-url-state="replaceState"`.  
+`setAjax()` на **композите** (`Form`, `Group`, `Nav`, …) только пробрасывает флаг во вложенные элементы (сам композит маркер не рисует). Каждый элемент сам решает, умеет ли AJAX (`supportsAjax()`): поля ввода / submit — да, `Label` — нет. На **поле** — field mode (`action` = `getId()`). Дочерние, добавленные после `setAjax()`, тоже получают флаг.
 
 В demo URL state и AJAX POST используют **одни и те же ключи**, что `collectPageData()` (`getFormName()` из DOM): например `demoSettings_decoratorFieldset_decorator`, `fl_gc_cat[]`, `page`. Decorator читается только по полному ключу `demoSettings_decoratorFieldset_decorator` (или из session).
 
@@ -247,7 +250,9 @@ $input = (new InputText('name'))->setAjax();
 ```php
 use Kavalhub\FormGenerator\Ajax\AjaxRequest;
 use Kavalhub\FormGenerator\Ajax\ElementAjaxHandler;
-use Kavalhub\FormGenerator\Bootstrap\BootstrapAjaxRenderStrategy;
+use Kavalhub\FormGenerator\Ajax\ThemeAjaxRenderStrategy;
+use Kavalhub\FormGenerator\Render\ElementRenderer;
+use Kavalhub\FormGenerator\Render\RenderTheme;
 use Kavalhub\FormGenerator\Request\ElementRequest;
 use Kavalhub\FormGenerator\Validator\ElementValidator;
 
@@ -258,21 +263,24 @@ if (!AjaxRequest::isXmlHttpRequest()) {
     exit;
 }
 
+$renderer = (new ElementRenderer())->setTheme(RenderTheme::bootstrap()); // или plain()
 $validator = new ElementValidator(new ElementRequest());
-$handler = new ElementAjaxHandler($validator, new BootstrapAjaxRenderStrategy());
+$handler = new ElementAjaxHandler($validator, new ThemeAjaxRenderStrategy($renderer));
 $form = /* ваша форма */;
 
-if ($targetId = AjaxRequest::readTargetId()) {
-    echo $handler->handleField($form, $targetId)->jsonEncode();
+$validator->handle($form);
+
+if ($validator->checkSubmit($submit)) {
+    echo $handler->handleForm($form)->jsonEncode();
     exit;
 }
 
-if ($validator->checkSubmit($submit) && $validator->handle($form)) {
-    echo $handler->handleBlock($table)->setMessage('Сохранено')->jsonEncode();
-}
+echo $handler->handleBlock($form)->jsonEncode();
 ```
 
-Параметр `action` (или `target_id`) = `getId()` поля, как в demo.
+Ajax — слой **поверх** уже выбранной темы renderer (`plain` / `bootstrap` / …), не альтернатива теме.  
+Действие определяется через форму (`checkSubmit` / `handle`), без сырого `$_REQUEST` для target.  
+`AjaxRequest::readTargetId()` устарел (обход request/validator) и оставлен только для старых demo.
 
 ### Клиент (минимальный пример, не входит в пакет)
 
@@ -294,11 +302,10 @@ function applyUrlState(form) {
     (mode === 'pushState' ? history.pushState : history.replaceState).call(history, null, '', url);
 }
 
-document.querySelector('[data-fg-ajax="true"]').addEventListener('input', function () {
-    const fd = collectPageData();
-    fd.set('action', this.id);
-    fd.set(this.name, this.value);
-    fetch('/ajax.php', { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+document.querySelector('[data-fg-ajax="true"]').addEventListener('change', function () {
+    const form = this.closest('form');
+    const fd = new FormData(form);
+    fetch(form.action, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(r => r.json())
         .then(data => {
             data.REPLACE.forEach(patch => {
@@ -361,13 +368,26 @@ $data = ElementDataCollector::collectByFormName($form);
 | `Html\Textarea` | Многострочный ввод |
 | `Html\InputHidden`, `Html\InputSubmit`, `Html\Button` | Скрытые и кнопки |
 | `Html\Label`, `Html\Nav`, `Html\Link` | Разметка |
+| `Html\Paginator` | Пагинация списка: `PaginatorInterface` (данные, `bind()`, навигация); дочерние `Link`/`Label` |
+
+### Paginator
+
+`Html\Paginator` реализует [`PaginatorInterface`](src/Html/Interface/PaginatorInterface.php):
+
+- **Данные** — `setCount()`, `getLimit()`, `getPage()`, `getOffset()`, `getUrlPattern()` (как в Dks)
+- **Запрос** — `bind($validator)` читает `limit`/`page` из `$_REQUEST` через приватные `InputNumber` (не в `elementStorage`, не рендерятся); `getByName('page'|'limit')` для API
+- **Навигация** — `getNumPages()`, `getPages()`, `getPageUrl()`, `getPrevUrl()`, `getNextUrl()`; `rebuildNavigation()` строит дочерние `Link`/`Label` при `setCount()` / `setQueryList()`
+- **HTML** — `Group::render()` выводит дочерние ссылки; шаблоны декораторов `Paginator` — только layout (`nav`/`ul`/`li`) и `decorateChild()` для каждого `Link`; `setAjax()` / `getClass()` — из `Group`
+
+Типичный порядок: `setParent($form)` → `bind($validator)` → `setQueryList()` → `setCount($total)` → `getOffset()` для выборки.
+
 | `Html\Table\Table`, `Html\Table\Tr`, `Html\Table\Td`, `Html\Table\Th` | Таблицы |
 
 ## Миграция 2.x → 3.x
 
 - Namespace виджетов: `Kavalhub\FormGenerator\Form\*` → `Kavalhub\FormGenerator\Html\*`
 - Таблицы: `Kavalhub\FormGenerator\Table\*` → `Kavalhub\FormGenerator\Html\Table\*`
-- Рендеринг элементов: `getHtml()` → `render()` (декораторы по-прежнему используют `getHtml()`)
+- Рендеринг: единый метод `render()` у элементов и декораторов ([`HtmlOutputInterface`](src/Html/Interface/HtmlOutputInterface.php))
 - `Element` — доменная модель без HTML; HTML-трейты и виджеты в `src/Html/`
 - `HtmlEscaper` перенесён в `Kavalhub\FormGenerator\Html\Util\HtmlEscaper`
 - Базовые HTML-классы: `HtmlElement`, `HtmlElementWithValue`, `HtmlCompositeElement` — содержат `tag`, `ClassList`, `Path`

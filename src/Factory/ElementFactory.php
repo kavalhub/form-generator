@@ -5,15 +5,12 @@ namespace Kavalhub\FormGenerator\Factory;
 
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Factory\Interface\ElementFactoryInterface;
-use Kavalhub\FormGenerator\Html\Group;
-use Kavalhub\FormGenerator\Html\InputCheckbox;
-use Kavalhub\FormGenerator\Html\InputRadio;
-use Kavalhub\FormGenerator\Html\InputText;
-use Kavalhub\FormGenerator\Html\Select;
 use RuntimeException;
 
 class ElementFactory implements ElementFactoryInterface
 {
+    private const ELEMENT_NAMESPACE = 'Kavalhub\\FormGenerator\\Html\\';
+
     public const ELEMENT = 'element';
     public const NAME = 'name';
     public const METHOD = 'method';
@@ -79,13 +76,14 @@ class ElementFactory implements ElementFactoryInterface
 
     public static function getClassName(string $name): string
     {
-        return match ($name) {
-            'InputCheckbox' => InputCheckbox::class,
-            'InputRadio' => InputRadio::class,
-            'Select' => Select::class,
-            'Group' => Group::class,
-            'InputText' => InputText::class,
-            default => throw new RuntimeException('Unknown element type: ' . $name),
-        };
+        $class = str_contains($name, '\\')
+            ? $name
+            : self::ELEMENT_NAMESPACE . $name;
+
+        if (!class_exists($class)) {
+            throw new RuntimeException('Unknown element type: ' . $name);
+        }
+
+        return $class;
     }
 }

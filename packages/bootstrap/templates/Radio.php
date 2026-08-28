@@ -7,7 +7,7 @@ $errorHtml = !empty($this->element->getError())
 $this->element->addClass(['form-control']);
 $html = '';
 foreach ($this->element->getAll() as $childElement) {
-    $html .= $this->decorateChild($childElement)->getHtml();
+    $html .= $this->decorateChild($childElement)->render();
 }
 
 return '<div class="form-group"><label for="' . $this->element->getId() . '">' . $this->element->getTitle() . '</label>'

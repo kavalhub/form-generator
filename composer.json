@@ -5,7 +5,7 @@
     "keywords": ["PHP", "Form", "Validation form"],
     "homepage": "https://github.com/kavalhub/form-generator.git",
     "license": "MIT",
-    "version": "3.3.1",
+    "version": "4.0.0",
     "autoload": {
         "psr-4": {
             "Kavalhub\\FormGenerator\\": "src/"
@@ -14,6 +14,7 @@
     "autoload-dev": {
         "psr-4": {
             "Kavalhub\\Example\\": "example/",
+            "SimpleExample\\": "simpleExample/",
             "Kavalhub\\Tests\\FormGenerator\\": "tests/",
             "Kavalhub\\FormGenerator\\Laravel\\": "packages/laravel/src/",
             "Kavalhub\\Tests\\FormGenerator\\Laravel\\": "packages/laravel/tests/",

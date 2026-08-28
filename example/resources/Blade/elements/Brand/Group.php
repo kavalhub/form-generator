@@ -2,7 +2,7 @@
 $templateFile = 'resources/Blade/elements/Brand/Group.php';
 $html = [];
 foreach ($element->getAll() as $childElement) {
-    $html[] = $decorator->decorateChild($childElement)->getHtml();
+    $html[] = $decorator->decorateChild($childElement)->render();
 }
 $html = implode('', $html);
 $error =

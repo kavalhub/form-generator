@@ -12,7 +12,7 @@ if ($children !== []) {
     }
     foreach ($children as $child) {
         $body .= '<div class="form-check form-check-inline">'
-            . $this->decorateChild($child)->getHtml() . '</div>';
+            . $this->decorateChild($child)->render() . '</div>';
     }
 }
 

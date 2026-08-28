@@ -1,5 +1,5 @@
 {% set parts = [] %}
 {% for child in element.all %}
-  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+  {% set parts = parts|merge([decorator.decorateChild(child).render]) %}
 {% endfor %}
 <div class="fg-twig-header mb-3">{{ parts|join('')|raw }}</div>
