@@ -1,6 +1,6 @@
 {% do element.addClass(['fg-twig-form']) %}
 {% set parts = [] %}
 {% for child in element.all %}
-  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+  {% set parts = parts|merge([decorator.decorateChild(child).render]) %}
 {% endfor %}
 <form{{ element.htmlTrait|raw }}>{{ parts|join('')|raw }}</form>

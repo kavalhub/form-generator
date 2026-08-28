@@ -4,7 +4,7 @@ $errorHtml = !empty($element->getError())
     : '';
 $html = '';
 foreach ($element->getAll() as $childElement) {
-    $html .= $decorator->decorateChild($childElement)->getHtml();
+    $html .= $decorator->decorateChild($childElement)->render();
 }
 $__html = '<div class="fg-blade-field fg-blade-group">'
     . '<div class="fg-blade-label">' . $element->getTitle() . '</div>'

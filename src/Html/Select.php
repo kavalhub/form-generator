@@ -22,6 +22,11 @@ class Select extends HtmlCompositeElementWithValue
         $this->setItem($item);
     }
 
+    public function supportsAjax(): bool
+    {
+        return true;
+    }
+
     public function setItem(array $item): self
     {
         foreach ($item as $key => $value) {

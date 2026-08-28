@@ -5,7 +5,7 @@ $templateFile = 'resources/Bootstrap/elements/Brand/Group.php';
 
 $html = [];
 foreach ($this->element->getAll() as $childElement) {
-    $html[] = $this->decorateChild($childElement)->getHtml();
+    $html[] = $this->decorateChild($childElement)->render();
 }
 $html = implode('', $html);
 $error =

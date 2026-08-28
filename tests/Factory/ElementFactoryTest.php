@@ -7,6 +7,7 @@ use Kavalhub\FormGenerator\Factory\ElementFactory;
 use Kavalhub\FormGenerator\Html\Group;
 use Kavalhub\FormGenerator\Html\InputCheckbox;
 use Kavalhub\FormGenerator\Html\InputRadio;
+use Kavalhub\FormGenerator\Html\InputRange;
 use Kavalhub\FormGenerator\Html\InputText;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -79,5 +80,22 @@ final class ElementFactoryTest extends TestCase
         $this->assertSame(InputCheckbox::class, ElementFactory::getClassName('InputCheckbox'));
         $this->assertSame(InputRadio::class, ElementFactory::getClassName('InputRadio'));
         $this->assertSame(InputText::class, ElementFactory::getClassName('InputText'));
+    }
+
+    public function testGetClassNameAcceptsFqcn(): void
+    {
+        $this->assertSame(InputCheckbox::class, ElementFactory::getClassName(InputCheckbox::class));
+    }
+
+    public function testGetClassNameResolvesInputRange(): void
+    {
+        $this->assertSame(InputRange::class, ElementFactory::getClassName('InputRange'));
+    }
+
+    public function testGetClassNameThrowsForUnknown(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unknown element type: NonExistent');
+        ElementFactory::getClassName('NonExistent');
     }
 }

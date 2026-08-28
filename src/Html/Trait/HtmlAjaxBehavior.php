@@ -13,13 +13,20 @@ trait HtmlAjaxBehavior
     public function setAjax(bool $enabled = true): self
     {
         $this->ajaxEnabled = $enabled;
-
         return $this;
     }
 
     public function isAjax(): bool
     {
         return $this->ajaxEnabled;
+    }
+
+    /**
+     * Whether this element can send AJAX (renders data-fg-ajax). Composites propagate only.
+     */
+    public function supportsAjax(): bool
+    {
+        return true;
     }
 
     /**
@@ -46,7 +53,7 @@ trait HtmlAjaxBehavior
     protected function getHtmlAjaxBehavior(): string
     {
         $html = [];
-        if ($this->ajaxEnabled) {
+        if ($this->ajaxEnabled && $this->supportsAjax()) {
             $html[] = ' data-fg-ajax="true"';
         }
         if ($this->urlState !== null && $this->urlState !== '') {

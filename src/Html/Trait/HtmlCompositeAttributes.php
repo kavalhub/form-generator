@@ -5,6 +5,6 @@ namespace Kavalhub\FormGenerator\Html\Trait;
 
 trait HtmlCompositeAttributes
 {
-    use HtmlAttributes;
     use HtmlName;
+    use PropagatesHtmlAjaxToChildren;
 }

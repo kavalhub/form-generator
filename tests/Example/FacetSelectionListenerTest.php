@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Kavalhub\Tests\FormGenerator\Example;
 
-use Kavalhub\Example\Env\FacetSelectionListener;
-use Kavalhub\Example\Env\Storage;
+use Kavalhub\Example\Infrastructure\Persistence\PdoCatalogRepository;
+use Kavalhub\Example\Presentation\Web\Form\FacetSelectionListener;
 use Kavalhub\FormGenerator\Event\ElementChangedEvent;
 use Kavalhub\FormGenerator\Html\Group;
 use Kavalhub\FormGenerator\Html\InputCheckbox;
@@ -22,10 +22,10 @@ final class FacetSelectionListenerTest extends TestCase
         $statement->method('execute');
         $statement->method('fetchAll')->willReturn(['10', '20']);
 
-        $storage = new Storage($pdo);
-        $listener = new FacetSelectionListener($storage);
+        $repository = new PdoCatalogRepository($pdo);
+        $listener = new FacetSelectionListener($repository);
 
-        $group = new Group('facets');
+        $group = new Group('gcolor');
         $group->addElement((new InputCheckbox('color', 'red'))->setChecked());
         $listener->onElementChanged(new ElementChangedEvent($group));
 
@@ -36,15 +36,45 @@ final class FacetSelectionListenerTest extends TestCase
 
     public function testResetClearsFacetSelection(): void
     {
-        $storage = new Storage($this->createMock(PDO::class));
-        $listener = new FacetSelectionListener($storage);
+        $repository = new PdoCatalogRepository($this->createMock(PDO::class));
+        $listener = new FacetSelectionListener($repository);
 
-        $group = new Group('facets');
+        $group = new Group('gcolor');
         $group->addElement((new InputCheckbox('color', 'red'))->setChecked());
         $listener->onElementChanged(new ElementChangedEvent($group));
         $listener->reset();
 
         $this->assertFalse($listener->hasSelection());
         $this->assertSame([], $listener->getFacetList());
+    }
+
+    public function testIgnoresCategoryGroupAndFormEvents(): void
+    {
+        $repository = new PdoCatalogRepository($this->createMock(PDO::class));
+        $listener = new FacetSelectionListener($repository);
+
+        $categoryGroup = new Group('gc');
+        $categoryGroup->addElement((new InputCheckbox('cat', '1'))->setChecked());
+        $listener->onElementChanged(new ElementChangedEvent($categoryGroup));
+
+        $form = new Group('fl');
+        $form->addElement((new InputCheckbox('cat', '1'))->setChecked());
+        $listener->onElementChanged(new ElementChangedEvent($form));
+
+        $this->assertFalse($listener->hasSelection());
+        $this->assertSame([], $listener->getFacetList());
+    }
+
+    public function testAcceptsFacetGroupEvent(): void
+    {
+        $repository = new PdoCatalogRepository($this->createMock(PDO::class));
+        $listener = new FacetSelectionListener($repository);
+
+        $group = new Group('gБренд');
+        $group->addElement((new InputCheckbox('Бренд', 'Apple'))->setChecked());
+        $listener->onElementChanged(new ElementChangedEvent($group));
+
+        $this->assertTrue($listener->hasSelection());
+        $this->assertSame(['Бренд' => ['Apple']], $listener->getFacetList());
     }
 }

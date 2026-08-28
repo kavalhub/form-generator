@@ -1,7 +1,7 @@
 {% set error = element.error is not empty ? '<div class="fg-twig-error">' ~ element.displayErrors ~ '</div>' : '' %}
 {% set parts = [] %}
 {% for child in element.all %}
-  {% set parts = parts|merge([decorator.decorateChild(child).html]) %}
+  {% set parts = parts|merge([decorator.decorateChild(child).render]) %}
 {% endfor %}
 <div class="fg-twig-field fg-twig-group">
   <div class="fg-twig-label">{{ element.title }}</div>

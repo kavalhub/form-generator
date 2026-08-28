@@ -6,23 +6,23 @@ namespace Kavalhub\FormGenerator\Twig;
 use Kavalhub\FormGenerator\Ajax\Interface\AjaxRenderStrategyInterface;
 use Kavalhub\FormGenerator\Element\Interface\ElementInterface;
 use Kavalhub\FormGenerator\Html\Interface\HtmlDecoratableInterface;
+use Kavalhub\FormGenerator\Render\ElementRenderer;
 
 final class TwigAjaxRenderStrategy implements AjaxRenderStrategyInterface
 {
     public function __construct(
         private readonly ?string $templatePath = null,
         private readonly ?TwigViewFactory $viewFactory = null,
+        private readonly ElementRenderer $renderer = new ElementRenderer(),
     ) {
     }
 
     public function blockHtml(HtmlDecoratableInterface $element): string
     {
-        $decorator = new TwigDecorator($element, $this->viewFactory);
-        if ($this->templatePath !== null) {
-            $decorator->setTemplate($this->templatePath);
-        }
-
-        return $decorator->getHtml();
+        return $this->renderer->html(
+            $element,
+            TwigTheme::create($this->templatePath, $this->templatePath, $this->viewFactory),
+        );
     }
 
     public function fieldClass(ElementInterface $element): string

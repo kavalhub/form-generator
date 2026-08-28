@@ -4,7 +4,7 @@ declare(strict_types=1);
 $templateFile = 'resources/Tailwind/elements/Brand/Group.php';
 $html = [];
 foreach ($this->element->getAll() as $childElement) {
-    $html[] = $this->decorateChild($childElement)->getHtml();
+    $html[] = $this->decorateChild($childElement)->render();
 }
 $html = implode('', $html);
 $error = !empty($this->element->getError())

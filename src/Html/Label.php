@@ -14,11 +14,21 @@ class Label extends HtmlElementWithName
     private string $label = '';
     private bool $allowHtml = false;
 
+    public function supportsAjax(): bool
+    {
+        return false;
+    }
+
     public function setAllowHtml(bool $allowHtml = true): self
     {
         $this->allowHtml = $allowHtml;
 
         return $this;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
     }
 
     public function setLabel(string $label): self

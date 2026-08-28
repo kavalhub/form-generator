@@ -11,7 +11,7 @@ if ($children !== []) {
         $legend = trim(strip_tags($first->render()));
     }
     foreach ($children as $child) {
-        $body .= $this->decorateChild($child)->getHtml();
+        $body .= $this->decorateChild($child)->render();
     }
 }
 

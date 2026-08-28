@@ -18,6 +18,11 @@ class Option extends HtmlElementWithValue
         $this->label = $label;
     }
 
+    public function supportsAjax(): bool
+    {
+        return false;
+    }
+
     public function getFormName(): string
     {
         return $this->parent->getFormName();
